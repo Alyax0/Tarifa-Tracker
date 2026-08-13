@@ -20,10 +20,20 @@ const KEY = "bets:all";
 async function fetchProfile() {
   const r = await fetch(PROFILE_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "User-Agent": "Mozilla/5.0" },
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+      Origin: "https://gamdom.com",
+      Referer: "https://gamdom.com/",
+      "Accept-Language": "es-MX,es;q=0.9,en;q=0.8",
+    },
     body: JSON.stringify({ userName: TARGET_USERNAME }),
   });
-  if (!r.ok) throw new Error(`gamdom respondio ${r.status}`);
+  if (!r.ok) {
+    const body = await r.text().catch(() => "");
+    throw new Error(`gamdom respondio ${r.status}: ${body.slice(0, 200)}`);
+  }
   return r.json();
 }
 
