@@ -10,7 +10,7 @@ const POLL_MS = 20000; // cada cuanto revisa por apuestas nuevas
 
 const CATS = {
   deportiva: { label: "Deportiva", color: "#4C8DFF" },
-  skins: { label: "Gamdom", color: "#E8283F" },
+  skins: { label: "Gamdom", color: "#2F6FED" },
 };
 const RESULTS = {
   pendiente: { label: "Pendiente", color: "#E8B339" },
@@ -19,23 +19,30 @@ const RESULTS = {
   push: { label: "Push", color: "#8A8A90" },
 };
 
-const PROVIDERS = ["Hacksaw Gaming", "Pragmatic Play", "Nolimit City", "BGaming", "Push Gaming", "Print Studios", "Red Tiger", "Thunderkick", "AvatarUX", "Backseat Gaming"];
+// Juegos reales disponibles en Gamdom: los 7 Originals de la casa, más
+// slots confirmados de proveedores reales (Pragmatic Play, Hacksaw Gaming,
+// Nolimit City, NetEnt, Play'n GO, Playson) que sí están en su catálogo.
 const SLOTS = [
-  { name: "Chaos Crew 2", provider: "Hacksaw Gaming", grad: ["#0f3d3d", "#0a1a1a"] },
-  { name: "Pub Kings", provider: "Pragmatic Play", grad: ["#3d2b0f", "#1a140a"] },
-  { name: "Bonanza Billion Xtreme", provider: "BGaming", grad: ["#2b0f3d", "#140a1a"] },
-  { name: "Roulette Macao", provider: "Pragmatic Play", grad: ["#3d0f16", "#1a0a0d"] },
-  { name: "Space Zoo", provider: "Backseat Gaming", grad: ["#0f1e3d", "#0a121a"] },
-  { name: "Big Rich Turkeys", provider: "Red Tiger", grad: ["#3d260f", "#1a110a"] },
-  { name: "Blackjack 145", provider: "Pragmatic Play", grad: ["#12331a", "#0a1a0d"] },
-  { name: "Deer Lick'n Free Spins", provider: "AvatarUX", grad: ["#3d0f2d", "#1a0a15"] },
-  { name: "Heart of Vegas", provider: "Thunderkick", grad: ["#0f2b3d", "#0a151a"] },
-  { name: "Wanted Dead or a Wild", provider: "Hacksaw Gaming", grad: ["#3d0f0f", "#1a0a0a"] },
-  { name: "Sugar Rush 1000", provider: "Pragmatic Play", grad: ["#3d2b0f", "#1a140a"] },
-  { name: "Tombstone RIP", provider: "Print Studios", grad: ["#1a1a1a", "#0a0a0a"] },
-  { name: "Fruit Party 2", provider: "Pragmatic Play", grad: ["#0f3d16", "#0a1a0d"] },
-  { name: "San Quentin xWays", provider: "Nolimit City", grad: ["#3d0f0f", "#1a0a0a"] },
-  { name: "Punk Rocker", provider: "Nolimit City", grad: ["#2b0f3d", "#140a1a"] },
+  { name: "Crash", provider: "Gamdom Originals", grad: ["#0f2340", "#0a1420"] },
+  { name: "Dice", provider: "Gamdom Originals", grad: ["#122b4d", "#0a1420"] },
+  { name: "Roulette", provider: "Gamdom Originals", grad: ["#14315c", "#0a1420"] },
+  { name: "Hilo", provider: "Gamdom Originals", grad: ["#0f2340", "#0a1420"] },
+  { name: "Plinko", provider: "Gamdom Originals", grad: ["#122b4d", "#0a1420"] },
+  { name: "Mines", provider: "Gamdom Originals", grad: ["#14315c", "#0a1420"] },
+  { name: "Keno", provider: "Gamdom Originals", grad: ["#0f2340", "#0a1420"] },
+  { name: "Sweet Bonanza", provider: "Pragmatic Play", grad: ["#3d0f2d", "#1a0a15"] },
+  { name: "Gates of Olympus", provider: "Pragmatic Play", grad: ["#3d2b0f", "#1a140a"] },
+  { name: "Buffalo King", provider: "Pragmatic Play", grad: ["#2b1a0f", "#150d0a"] },
+  { name: "Zeus vs Hades: Gods of War", provider: "Pragmatic Play", grad: ["#12203d", "#0a111a"] },
+  { name: "Bullets and Bounty", provider: "Hacksaw Gaming", grad: ["#3d0f0f", "#1a0a0a"] },
+  { name: "Slayers Ink Boosted", provider: "Hacksaw Gaming", grad: ["#0f3d16", "#0a1a0d"] },
+  { name: "Fist of Destruction Boosted", provider: "Hacksaw Gaming", grad: ["#3d0f0f", "#1a0a0a"] },
+  { name: "Home of the Brave", provider: "Nolimit City", grad: ["#1a1a1a", "#0a0a0a"] },
+  { name: "Book of Dead", provider: "Play'n GO", grad: ["#3d2b0f", "#1a140a"] },
+  { name: "Gonzo's Quest", provider: "NetEnt", grad: ["#0f3d3d", "#0a1a1a"] },
+  { name: "Starburst", provider: "NetEnt", grad: ["#2b0f3d", "#140a1a"] },
+  { name: "100 Joker Staxx", provider: "Playson", grad: ["#3d260f", "#1a110a"] },
+  { name: "Most Wanted", provider: "Gamdom Exclusive", grad: ["#14315c", "#0a1420"] },
 ];
 
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -52,8 +59,8 @@ export default function LiveTracker() {
   const [bets, setBets] = useState([]);
   const [bankroll, setBankroll] = useState(100);
   const [loaded, setLoaded] = useState(false);
-  const [brand, setBrand] = useState("ALYAX LIVE TRACKER");
-  const [kickChannel, setKickChannel] = useState("alyaxgg");
+  const [brand, setBrand] = useState("TARIFA LIVE TRACKER");
+  const [kickChannel, setKickChannel] = useState("Baitarifa");
   const [editingBrand, setEditingBrand] = useState(false);
   const [filter, setFilter] = useState("todas");
   const [lastSync, setLastSync] = useState(null);
@@ -148,30 +155,32 @@ export default function LiveTracker() {
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
         :root {
           --bg: #0A0A0C; --panel: #131316; --panel-2: #1A1A1E; --border: #262629;
-          --red: #E8283F; --red-dim: #7A1420;
+          --accent: #2F6FED; --accent-dim: #123058;
           --text: #F2F2F0; --text-muted: #8A8A90;
           --font-display: 'Bebas Neue', sans-serif; --font-body: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace;
         }
         .mono { font-family: var(--font-mono); }
         .display { font-family: var(--font-display); letter-spacing: 0.02em; }
         .btr-input { background: var(--panel-2); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 8px 10px; font-size: 14px; outline: none; }
-        .btr-input:focus { border-color: var(--red); }
+        .btr-input:focus { border-color: var(--accent); }
         .btr-card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; }
         .chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 100px; font-size: 12px; font-weight: 500; }
         .navtab { padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
         .row-hover:hover { background: var(--panel-2); }
+        .slot-card { transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
+        .slot-card:hover { transform: translateY(-3px); }
         ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
       `}</style>
 
       {/* signature diagonal slash background */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        <div style={{ position: "absolute", top: "-10%", right: "-5%", width: "60%", height: "140%", background: "linear-gradient(100deg, transparent 40%, var(--red-dim) 41%, transparent 44%, transparent 50%, var(--red) 51%, transparent 54%)", opacity: 0.25, transform: "rotate(8deg)" }} />
+        <div style={{ position: "absolute", top: "-10%", right: "-5%", width: "60%", height: "140%", background: "linear-gradient(100deg, transparent 40%, var(--accent-dim) 41%, transparent 44%, transparent 50%, var(--accent) 51%, transparent 54%)", opacity: 0.25, transform: "rotate(8deg)" }} />
       </div>
 
       <div className="relative max-w-6xl mx-auto px-5 py-6" style={{ zIndex: 1 }}>
         {/* Nav */}
         <div className="flex items-center justify-between mb-10">
-          <div className="display text-2xl" style={{ color: "var(--red)" }}>
+          <div className="display text-2xl" style={{ color: "var(--accent)" }}>
             {editingBrand ? (
               <input autoFocus className="btr-input display text-xl" value={brand} onChange={(e) => setBrand(e.target.value)} onBlur={() => setEditingBrand(false)} onKeyDown={(e) => e.key === "Enter" && setEditingBrand(false)} />
             ) : (
@@ -179,11 +188,11 @@ export default function LiveTracker() {
             )}
           </div>
           <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ border: "1px solid var(--border)" }}>
-            <div className={`navtab ${view === "feed" ? "" : ""}`} style={{ background: view === "feed" ? "var(--red)" : "transparent", color: view === "feed" ? "#fff" : "var(--text-muted)" }} onClick={() => setView("feed")}>Live Feed</div>
-            <div className="navtab" style={{ background: view === "picker" ? "var(--red)" : "transparent", color: view === "picker" ? "#fff" : "var(--text-muted)" }} onClick={() => setView("picker")}>Slot Picker</div>
+            <div className={`navtab ${view === "feed" ? "" : ""}`} style={{ background: view === "feed" ? "var(--accent)" : "transparent", color: view === "feed" ? "#fff" : "var(--text-muted)" }} onClick={() => setView("feed")}>Live Feed</div>
+            <div className="navtab" style={{ background: view === "picker" ? "var(--accent)" : "transparent", color: view === "picker" ? "#fff" : "var(--text-muted)" }} onClick={() => setView("picker")}>Slot Picker</div>
           </div>
           <div className="flex items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
-            <RefreshCw size={12} className={syncStatus === "esperando" ? "animate-spin" : ""} style={{ color: syncStatus === "error" ? "var(--red)" : "#35D07F" }} />
+            <RefreshCw size={12} className={syncStatus === "esperando" ? "animate-spin" : ""} style={{ color: syncStatus === "error" ? "#E8283F" : "#35D07F" }} />
             {syncStatus === "error" ? "sin conexión" : lastSync ? `sync ${lastSync.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}` : "conectando..."}
           </div>
         </div>
@@ -191,12 +200,11 @@ export default function LiveTracker() {
         {view === "feed" ? (
           <>
             <h1 className="display text-6xl text-center mb-1" style={{ color: "var(--text)" }}>
-              {brand.split(" ")[0]} <span style={{ color: "var(--red)" }}>{brand.split(" ").slice(1).join(" ")}</span>
+              {brand.split(" ")[0]} <span style={{ color: "var(--accent)" }}>{brand.split(" ").slice(1).join(" ")}</span>
             </h1>
             <div className="text-center text-xs mb-8" style={{ color: "var(--text-muted)" }}>
-              Fuente: Gamdom · datos de ejemplo — conecta <span className="mono">sync_bets.py</span> para feed real
+              Fuente: Gamdom · sincronizado automáticamente
             </div>
-
 
             <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_280px] gap-4">
               {/* Left: feed */}
@@ -208,7 +216,7 @@ export default function LiveTracker() {
                   </div>
                   <div className="flex gap-1">
                     {["todas", ...Object.keys(CATS)].map((k) => (
-                      <button key={k} onClick={() => setFilter(k)} className="chip" style={{ background: filter === k ? "var(--red)" + "22" : "transparent", color: filter === k ? "var(--red)" : "var(--text-muted)", border: `1px solid ${filter === k ? "var(--red)" : "var(--border)"}` }}>
+                      <button key={k} onClick={() => setFilter(k)} className="chip" style={{ background: filter === k ? "var(--accent)" + "22" : "transparent", color: filter === k ? "var(--accent)" : "var(--text-muted)", border: `1px solid ${filter === k ? "var(--accent)" : "var(--border)"}` }}>
                         {k === "todas" ? "Recientes" : CATS[k].label}
                       </button>
                     ))}
@@ -244,13 +252,18 @@ export default function LiveTracker() {
                     <span style={{ color: "#53FC18" }}>KICK</span>
                     <span>{kickChannel}</span>
                   </div>
-                  <span className="chip" style={{ background: "var(--panel-2)", color: "var(--text-muted)" }}>OFFLINE</span>
+                  <a href={`https://kick.com/${kickChannel}`} target="_blank" rel="noreferrer" className="chip" style={{ background: "var(--panel-2)", color: "var(--text-muted)" }}>
+                    Ver en Kick ↗
+                  </a>
                 </div>
-                <div className="flex items-center justify-center flex-1" style={{ background: "#000" }}>
-                  <div className="text-center">
-                    <div className="display text-4xl tracking-widest" style={{ color: "var(--text-muted)" }}>OFFLINE</div>
-                    <div className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>{kickChannel} no está transmitiendo ahora</div>
-                  </div>
+                <div className="flex-1" style={{ background: "#000" }}>
+                  <iframe
+                    src={`https://player.kick.com/${kickChannel}`}
+                    title={`Stream de ${kickChannel}`}
+                    allow="autoplay; fullscreen"
+                    allowFullScreen
+                    style={{ width: "100%", height: "100%", border: "none" }}
+                  />
                 </div>
               </div>
 
@@ -291,7 +304,8 @@ function SlotPicker() {
   const [spinning, setSpinning] = useState(false);
   const [picked, setPicked] = useState(null);
   const intervalRef = useRef(null);
-  const trackRef = useRef(null);
+
+  const providers = useMemo(() => [...new Set(SLOTS.map((s) => s.provider))], []);
 
   const filtered = useMemo(() => {
     return SLOTS.filter((s) => {
@@ -308,90 +322,102 @@ function SlotPicker() {
     setSpinning(true);
     setPicked(null);
     let ticks = 0;
-    const totalTicks = 18 + Math.floor(Math.random() * 6);
-    intervalRef.current = setInterval(() => {
+    let delay = 70;
+    const totalTicks = 22 + Math.floor(Math.random() * 6);
+    const tick = () => {
       setHighlight((h) => (h + 1) % filtered.length);
       ticks++;
       if (ticks >= totalTicks) {
-        clearInterval(intervalRef.current);
         const finalIdx = Math.floor(Math.random() * filtered.length);
         setHighlight(finalIdx);
         setPicked(filtered[finalIdx]);
         setSpinning(false);
+        return;
       }
-    }, 90);
+      // Frena gradualmente hacia el final, como una ruleta real
+      if (ticks > totalTicks - 8) delay += 22;
+      intervalRef.current = setTimeout(tick, delay);
+    };
+    intervalRef.current = setTimeout(tick, delay);
   };
 
-  useEffect(() => () => clearInterval(intervalRef.current), []);
+  useEffect(() => () => clearTimeout(intervalRef.current), []);
 
   return (
     <div>
       <div className="text-center mb-2">
-        <div className="text-xs uppercase tracking-widest" style={{ color: "var(--red)" }}>Gamdom</div>
+        <div className="text-xs uppercase tracking-widest" style={{ color: "var(--accent)" }}>Gamdom</div>
         <h1 className="display text-6xl">
-          SLOT <span style={{ color: "var(--red)" }}>PICKER</span>
+          SLOT <span style={{ color: "var(--accent)" }}>PICKER</span>
         </h1>
         <div className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
-          ¿No sabés qué jugar? Filtrá por proveedor y que el azar decida. {SLOTS.length} slots en la baraja.
+          ¿No sabés qué jugar? Filtrá por proveedor y que el azar decida entre los Originals y slots reales de Gamdom. {SLOTS.length} juegos en la baraja.
         </div>
       </div>
 
       <div className="max-w-xl mx-auto mt-6 mb-4 relative">
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-muted)" }} />
-        <input className="btr-input w-full pl-9" placeholder="Buscar un slot..." value={query} onChange={(e) => setQuery(e.target.value)} />
+        <input className="btr-input w-full pl-9" placeholder="Buscar un juego..." value={query} onChange={(e) => setQuery(e.target.value)} />
       </div>
 
       <div className="flex flex-wrap justify-center gap-2 mb-8">
-        <button onClick={() => setActiveProviders([])} className="chip" style={{ background: activeProviders.length === 0 ? "var(--red)" : "var(--panel-2)", color: activeProviders.length === 0 ? "#fff" : "var(--text-muted)" }}>
+        <button onClick={() => setActiveProviders([])} className="chip" style={{ background: activeProviders.length === 0 ? "var(--accent)" : "var(--panel-2)", color: activeProviders.length === 0 ? "#fff" : "var(--text-muted)" }}>
           Todos {SLOTS.length}
         </button>
-        {PROVIDERS.map((p) => {
+        {providers.map((p) => {
           const count = SLOTS.filter((s) => s.provider === p).length;
-          if (!count) return null;
           const active = activeProviders.includes(p);
           return (
-            <button key={p} onClick={() => toggleProvider(p)} className="chip" style={{ background: active ? "var(--red)" : "var(--panel-2)", color: active ? "#fff" : "var(--text-muted)" }}>
+            <button key={p} onClick={() => toggleProvider(p)} className="chip" style={{ background: active ? "var(--accent)" : "var(--panel-2)", color: active ? "#fff" : "var(--text-muted)" }}>
               {p} {count}
             </button>
           );
         })}
       </div>
 
-      <div className="btr-card p-4 overflow-hidden mb-6" style={{ maxWidth: 900, margin: "0 auto" }}>
-        <div className="flex gap-3 overflow-x-hidden justify-center">
-          {filtered.slice(0, 9).map((s, idx) => (
-            <div
-              key={s.name}
-              className="flex-shrink-0 rounded-xl overflow-hidden relative"
-              style={{
-                width: 110, height: 140,
-                background: `linear-gradient(160deg, ${s.grad[0]}, ${s.grad[1]})`,
-                border: idx === highlight % Math.max(filtered.slice(0, 9).length, 1) && (spinning || picked) ? "2px solid var(--red)" : "1px solid var(--border)",
-                transform: idx === highlight % Math.max(filtered.slice(0, 9).length, 1) && (spinning || picked) ? "scale(1.06)" : "scale(1)",
-                transition: "transform 0.1s",
-              }}
-            >
-              <div className="absolute bottom-0 left-0 right-0 p-2" style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.85), transparent)" }}>
-                <div className="text-xs font-semibold leading-tight">{s.name}</div>
-                <div className="text-[10px]" style={{ color: "var(--text-muted)" }}>{s.provider}</div>
+      <div className="btr-card p-5 overflow-hidden mb-6" style={{ maxWidth: 980, margin: "0 auto" }}>
+        <div className="flex gap-3 overflow-x-hidden justify-center flex-wrap">
+          {filtered.slice(0, 10).map((s, idx) => {
+            const isActive = idx === highlight % Math.max(filtered.slice(0, 10).length, 1) && (spinning || picked);
+            return (
+              <div
+                key={s.name}
+                className="slot-card flex-shrink-0 rounded-xl overflow-hidden relative"
+                style={{
+                  width: 128, height: 158,
+                  background: `linear-gradient(160deg, ${s.grad[0]}, ${s.grad[1]})`,
+                  border: isActive ? "2px solid var(--accent)" : "1px solid var(--border)",
+                  boxShadow: isActive ? "0 0 20px rgba(47,111,237,0.45)" : "none",
+                  transform: isActive ? "scale(1.06)" : "scale(1)",
+                }}
+              >
+                <div className="absolute top-2 left-2 chip" style={{ background: "rgba(0,0,0,0.5)", color: "var(--text-muted)", fontSize: 9, padding: "2px 7px" }}>
+                  {s.provider === "Gamdom Originals" ? "ORIGINAL" : s.provider === "Gamdom Exclusive" ? "EXCLUSIVO" : s.provider}
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 p-2" style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.9), transparent)" }}>
+                  <div className="text-xs font-semibold leading-tight">{s.name}</div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
+        {filtered.length === 0 && (
+          <div className="text-center text-xs py-8" style={{ color: "var(--text-muted)" }}>Ningún juego coincide con tu búsqueda.</div>
+        )}
       </div>
 
       <div className="text-center mb-8">
-        <button onClick={spin} disabled={filtered.length === 0} className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium" style={{ background: "var(--red)", color: "#fff", opacity: filtered.length === 0 ? 0.5 : 1 }}>
-          <Shuffle size={16} /> {spinning ? "Girando..." : "Girar de nuevo"}
+        <button onClick={spin} disabled={filtered.length === 0} className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium" style={{ background: "var(--accent)", color: "#fff", opacity: filtered.length === 0 ? 0.5 : 1 }}>
+          <Shuffle size={16} /> {spinning ? "Girando..." : picked ? "Girar de nuevo" : "Girar"}
         </button>
-        <div className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>{filtered.length} slots en juego</div>
+        <div className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>{filtered.length} juegos en juego</div>
       </div>
 
       {picked && (
         <div className="btr-card p-4 max-w-md mx-auto flex items-center gap-4">
           <div className="rounded-lg flex-shrink-0" style={{ width: 64, height: 64, background: `linear-gradient(160deg, ${picked.grad[0]}, ${picked.grad[1]})` }} />
           <div>
-            <div className="text-xs uppercase tracking-wider" style={{ color: "var(--red)" }}>Te tocó</div>
+            <div className="text-xs uppercase tracking-wider" style={{ color: "var(--accent)" }}>Te tocó</div>
             <div className="display text-2xl">{picked.name}</div>
             <div className="text-xs" style={{ color: "var(--text-muted)" }}>{picked.provider}</div>
           </div>
