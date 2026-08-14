@@ -16,18 +16,22 @@ const TARGET_USERNAME = process.env.TARGET_USERNAME || "Tarifa";
 const PROFILE_URL = "https://gamdom.com/client-api/profile/userProfileJson";
 const COIN_DIVISOR = 1000;
 const KEY = "bets:all";
+const GAMDOM_COOKIE = process.env.GAMDOM_COOKIE || ""; // tu cookie de sesion, DevTools > Network > esa request > Request Headers > Cookie
 
 async function fetchProfile() {
+  const headers = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+    Origin: "https://gamdom.com",
+    Referer: "https://gamdom.com/",
+    "Accept-Language": "es-MX,es;q=0.9,en;q=0.8",
+  };
+  if (GAMDOM_COOKIE) headers.Cookie = GAMDOM_COOKIE;
+
   const r = await fetch(PROFILE_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
-      Origin: "https://gamdom.com",
-      Referer: "https://gamdom.com/",
-      "Accept-Language": "es-MX,es;q=0.9,en;q=0.8",
-    },
+    headers,
     body: JSON.stringify({ userName: TARGET_USERNAME }),
   });
   if (!r.ok) {
