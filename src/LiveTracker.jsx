@@ -76,6 +76,7 @@ export default function LiveTracker() {
   const [filter, setFilter] = useState("todas");
   const [lastSync, setLastSync] = useState(null);
   const [syncStatus, setSyncStatus] = useState("esperando"); // esperando | ok | error
+  const [kickLive, setKickLive] = useState(false);
 
   useEffect(() => {
     try {
@@ -161,6 +162,23 @@ export default function LiveTracker() {
     const interval = setInterval(syncFromApi, POLL_MS);
     return () => clearInterval(interval);
   }, [loaded]);
+
+  // Consulta si el canal de Kick está en vivo, cada 30s.
+  useEffect(() => {
+    let cancelled = false;
+    const checkKick = async () => {
+      try {
+        const res = await fetch(`/api/kick-status?channel=${kickChannel}`);
+        const data = await res.json();
+        if (!cancelled) setKickLive(!!data.live);
+      } catch (e) {
+        if (!cancelled) setKickLive(false);
+      }
+    };
+    checkKick();
+    const interval = setInterval(checkKick, 30000);
+    return () => { cancelled = true; clearInterval(interval); };
+  }, [kickChannel]);
 
   return (
     <div className="w-full min-h-screen relative overflow-hidden" style={{ background: "var(--bg)", color: "var(--text)", fontFamily: "var(--font-body)" }}>
@@ -265,24 +283,37 @@ export default function LiveTracker() {
                     <span style={{ color: "#53FC18" }}>KICK</span>
                     <span>{kickChannel}</span>
                   </div>
-                  <a href={`https://kick.com/${kickChannel}`} target="_blank" rel="noreferrer" className="chip" style={{ background: "var(--panel-2)", color: "var(--text-muted)" }}>
-                    Ver en Kick ↗
-                  </a>
+                  {kickLive ? (
+                    <a href={`https://kick.com/${kickChannel}`} target="_blank" rel="noreferrer" className="chip" style={{ background: "#53FC1822", color: "#53FC18" }}>
+                      ● EN VIVO
+                    </a>
+                  ) : (
+                    <span className="chip" style={{ background: "var(--panel-2)", color: "var(--text-muted)" }}>OFFLINE</span>
+                  )}
                 </div>
-                <div className="flex-1" style={{ background: "#000", position: "relative", overflow: "hidden" }}>
-                  <iframe
-                    src={`https://player.kick.com/${kickChannel}`}
-                    title={`Stream de ${kickChannel}`}
-                    allow="autoplay; fullscreen"
-                    allowFullScreen
-                    style={{
-                      position: "absolute",
-                      top: "-18%", left: "-18%",
-                      width: "136%", height: "136%",
-                      border: "none",
-                    }}
-                  />
-                </div>
+                {kickLive ? (
+                  <div className="flex-1" style={{ background: "#000", position: "relative", overflow: "hidden" }}>
+                    <iframe
+                      src={`https://player.kick.com/${kickChannel}`}
+                      title={`Stream de ${kickChannel}`}
+                      allow="autoplay; fullscreen"
+                      allowFullScreen
+                      style={{
+                        position: "absolute",
+                        top: "-18%", left: "-18%",
+                        width: "136%", height: "136%",
+                        border: "none",
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center flex-1" style={{ background: "#000" }}>
+                    <div className="text-center">
+                      <div className="display text-4xl tracking-widest" style={{ color: "var(--text-muted)" }}>OFFLINE</div>
+                      <div className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>{kickChannel} no está transmitiendo ahora</div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Right: big wins */}
