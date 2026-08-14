@@ -81,13 +81,13 @@ export default function LiveTracker() {
     try {
       const b = localStorage.getItem("bets"); if (b) setBets(JSON.parse(b));
       const br = localStorage.getItem("bankroll"); if (br) setBankroll(JSON.parse(br));
-      const bd = localStorage.getItem("brand"); if (bd) setBrand(bd);
+      const bd = localStorage.getItem("brand_v2"); if (bd) setBrand(bd);
     } catch (e) {}
     setLoaded(true);
   }, []);
   useEffect(() => { if (loaded) localStorage.setItem("bets", JSON.stringify(bets)); }, [bets, loaded]);
   useEffect(() => { if (loaded) localStorage.setItem("bankroll", JSON.stringify(bankroll)); }, [bankroll, loaded]);
-  useEffect(() => { if (loaded) localStorage.setItem("brand", brand); }, [brand, loaded]);
+  useEffect(() => { if (loaded) localStorage.setItem("brand_v2", brand); }, [brand, loaded]);
 
   const profitOf = (bet) => {
     if (bet.profit !== undefined && bet.profit !== null) return Number(bet.profit);
@@ -219,7 +219,7 @@ export default function LiveTracker() {
               Fuente: Gamdom · sincronizado automáticamente
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr_200px] gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-[230px_1fr_230px] gap-4">
               {/* Left: feed */}
               <div className="btr-card overflow-hidden" style={{ height: 560, display: "flex", flexDirection: "column" }}>
                 <div className="p-3" style={{ borderBottom: "1px solid var(--border)" }}>
@@ -288,7 +288,7 @@ export default function LiveTracker() {
               {/* Right: big wins */}
               <div className="btr-card p-3" style={{ height: 560, overflowY: "auto" }}>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="text-xs font-bold uppercase tracking-wider flex items-center gap-1"><Trophy size={12} /> Grandes victorias</div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1"><Trophy size={12} /> Grandes victorias</div>
                   <div className="text-xs" style={{ color: "var(--text-muted)" }}>{bigWins.length} victoria{bigWins.length === 1 ? "" : "s"}</div>
                 </div>
                 {bigWins.length === 0 ? (
