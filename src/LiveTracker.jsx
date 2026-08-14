@@ -5,7 +5,7 @@ import {
 
 // URL de tu endpoint backend (ver api/bets.js). La página lo consulta sola,
 // sin que nadie tenga que apretar nada.
-const SYNC_ENDPOINT = "https://TU-PROYECTO.vercel.app/api/bets";
+const SYNC_ENDPOINT = "https://tarifa-tracker.vercel.app/api/bets";
 const POLL_MS = 20000; // cada cuanto revisa por apuestas nuevas
 
 const CATS = {
