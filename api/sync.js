@@ -39,7 +39,9 @@ async function fetchProfile() {
 
   if (!r.ok) {
     const body = await r.text().catch(() => "");
-    throw new Error(`gamdom respondio ${r.status}: ${body.slice(0, 200)}`);
+    throw new Error(
+      `gamdom respondio ${r.status} (cookieLen=${GAMDOM_COOKIE.length}): ${body.slice(0, 200)}`
+    );
   }
   return r.json();
 }
