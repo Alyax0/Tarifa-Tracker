@@ -9,31 +9,34 @@
 //   2. Crea un cron job -> URL: https://TU-PROYECTO.vercel.app/api/sync
 //   3. Intervalo: cada 1-5 minutos
 //   4. Listo — desde ahi corre solo, sin tu PC ni nada.
-
 import { kv } from "@vercel/kv";
 
 const TARGET_USERNAME = process.env.TARGET_USERNAME || "Tarifa";
+const GAMDOM_COOKIE = process.env.GAMDOM_COOKIE; // <-- la cookie de sesión completa (el string largo del header Cookie)
 const PROFILE_URL = "https://gamdom.com/client-api/profile/userProfileJson";
 const COIN_DIVISOR = 1000;
 const KEY = "bets:all";
-const GAMDOM_COOKIE = process.env.GAMDOM_COOKIE || ""; // tu cookie de sesion, DevTools > Network > esa request > Request Headers > Cookie
 
 async function fetchProfile() {
-  const headers = {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
-    Origin: "https://gamdom.com",
-    Referer: "https://gamdom.com/",
-    "Accept-Language": "es-MX,es;q=0.9,en;q=0.8",
-  };
-  if (GAMDOM_COOKIE) headers.Cookie = GAMDOM_COOKIE;
+  if (!GAMDOM_COOKIE) {
+    throw new Error("Falta la env var GAMDOM_COOKIE en Vercel");
+  }
 
   const r = await fetch(PROFILE_URL, {
     method: "POST",
-    headers,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "*/*",
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+      Origin: "https://gamdom.com",
+      Referer: "https://gamdom.com/",
+      "Accept-Language": "es-MX,es;q=0.9,en;q=0.8",
+      Cookie: GAMDOM_COOKIE, // <-- esto era lo que faltaba
+    },
     body: JSON.stringify({ userName: TARGET_USERNAME }),
   });
+
   if (!r.ok) {
     const body = await r.text().catch(() => "");
     throw new Error(`gamdom respondio ${r.status}: ${body.slice(0, 200)}`);
@@ -48,10 +51,8 @@ function normalizePlays(data) {
     const coins = p.coins || 0;
     const profit = p.profit || 0;
     if (coins === 0 && profit === 0) continue;
-
     const stakeUsd = Math.abs(coins) / COIN_DIVISOR;
     const profitUsd = profit / COIN_DIVISOR;
-
     out.push({
       externalId: `gd_${p.game_id}`,
       date: (p.created || "").slice(0, 10),
@@ -69,14 +70,11 @@ export default async function handler(req, res) {
   try {
     const data = await fetchProfile();
     const plays = normalizePlays(data);
-
     const current = (await kv.get(KEY)) || [];
     const known = new Set(current.filter((b) => b.externalId).map((b) => b.externalId));
     const fresh = plays.filter((p) => !known.has(p.externalId));
     const merged = [...current, ...fresh];
-
     if (fresh.length) await kv.set(KEY, merged);
-
     return res.status(200).json({ ok: true, added: fresh.length, total: merged.length });
   } catch (e) {
     return res.status(500).json({ ok: false, error: e.message });
