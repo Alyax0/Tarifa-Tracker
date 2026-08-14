@@ -219,9 +219,9 @@ export default function LiveTracker() {
               Fuente: Gamdom · sincronizado automáticamente
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_280px] gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-[306px_862px_306px] gap-4">
               {/* Left: feed */}
-              <div className="btr-card overflow-hidden" style={{ height: 560, display: "flex", flexDirection: "column" }}>
+              <div className="btr-card overflow-hidden" style={{ height: 542, display: "flex", flexDirection: "column" }}>
                 <div className="p-3" style={{ borderBottom: "1px solid var(--border)" }}>
                   <div className="flex items-center justify-between mb-2">
                     <div className="text-xs font-bold uppercase tracking-wider">Apuestas</div>
@@ -259,7 +259,7 @@ export default function LiveTracker() {
               </div>
 
               {/* Center: kick embed */}
-              <div className="btr-card p-0 overflow-hidden" style={{ height: 560, display: "flex", flexDirection: "column" }}>
+              <div className="btr-card p-0 overflow-hidden" style={{ height: 542, display: "flex", flexDirection: "column" }}>
                 <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
                   <div className="flex items-center gap-2 text-sm font-bold">
                     <span style={{ color: "#53FC18" }}>KICK</span>
@@ -286,7 +286,7 @@ export default function LiveTracker() {
               </div>
 
               {/* Right: big wins */}
-              <div className="btr-card p-3" style={{ height: 560, overflowY: "auto" }}>
+              <div className="btr-card p-3" style={{ height: 542, overflowY: "auto" }}>
                 <div className="flex items-center justify-between mb-3">
                   <div className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1"><Trophy size={12} /> Grandes victorias</div>
                   <div className="text-xs" style={{ color: "var(--text-muted)" }}>{bigWins.length} victoria{bigWins.length === 1 ? "" : "s"}</div>
