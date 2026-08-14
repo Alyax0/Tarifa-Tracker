@@ -190,7 +190,7 @@ export default function LiveTracker() {
         <div style={{ position: "absolute", top: "-10%", right: "-5%", width: "60%", height: "140%", background: "linear-gradient(100deg, transparent 40%, var(--accent-dim) 41%, transparent 44%, transparent 50%, var(--accent) 51%, transparent 54%)", opacity: 0.25, transform: "rotate(8deg)" }} />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-5 py-6" style={{ zIndex: 1 }}>
+      <div className="relative mx-auto px-5 py-6" style={{ zIndex: 1, maxWidth: 1600 }}>
         {/* Nav */}
         <div className="flex items-center justify-between mb-10">
           <div className="display text-2xl" style={{ color: "var(--accent)" }}>
