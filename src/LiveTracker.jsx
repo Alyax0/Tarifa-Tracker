@@ -80,13 +80,13 @@ export default function LiveTracker() {
 
   useEffect(() => {
     try {
-      const b = localStorage.getItem("bets"); if (b) setBets(JSON.parse(b));
+      const b = localStorage.getItem("bets_v2"); if (b) setBets(JSON.parse(b));
       const br = localStorage.getItem("bankroll"); if (br) setBankroll(JSON.parse(br));
       const bd = localStorage.getItem("brand_v2"); if (bd) setBrand(bd);
     } catch (e) {}
     setLoaded(true);
   }, []);
-  useEffect(() => { if (loaded) localStorage.setItem("bets", JSON.stringify(bets)); }, [bets, loaded]);
+  useEffect(() => { if (loaded) localStorage.setItem("bets_v2", JSON.stringify(bets)); }, [bets, loaded]);
   useEffect(() => { if (loaded) localStorage.setItem("bankroll", JSON.stringify(bankroll)); }, [bankroll, loaded]);
   useEffect(() => { if (loaded) localStorage.setItem("brand_v2", brand); }, [brand, loaded]);
 
