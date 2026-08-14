@@ -219,7 +219,7 @@ export default function LiveTracker() {
               Fuente: Gamdom · sincronizado automáticamente
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-[230px_1fr_230px] gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_280px] gap-4">
               {/* Left: feed */}
               <div className="btr-card overflow-hidden" style={{ height: 560, display: "flex", flexDirection: "column" }}>
                 <div className="p-3" style={{ borderBottom: "1px solid var(--border)" }}>
