@@ -53,6 +53,17 @@ const fmt = (n) => {
   return `$${num.toFixed(2)}`;
 };
 const todayStr = () => new Date().toISOString().slice(0, 10);
+const timeAgo = (iso) => {
+  if (!iso) return null;
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return null;
+  const diffMin = Math.max(0, Math.floor((Date.now() - then) / 60000));
+  if (diffMin < 1) return "ahora";
+  if (diffMin < 60) return `${diffMin}m`;
+  const diffH = Math.floor(diffMin / 60);
+  if (diffH < 24) return `${diffH}h`;
+  return `${Math.floor(diffH / 24)}d`;
+};
 
 export default function LiveTracker() {
   const [view, setView] = useState("feed"); // feed | picker
@@ -112,8 +123,9 @@ export default function LiveTracker() {
     () => [...bets].filter((b) => filter === "todas" || b.category === filter).sort((a, b) => (a.date < b.date ? 1 : -1)),
     [bets, filter]
   );
+  const BIG_WIN_THRESHOLD = 5000;
   const bigWins = useMemo(
-    () => [...bets].filter((b) => b.result === "ganada").sort((a, b) => profitOf(b) - profitOf(a)).slice(0, 5),
+    () => [...bets].filter((b) => b.result === "ganada" && profitOf(b) >= BIG_WIN_THRESHOLD).sort((a, b) => profitOf(b) - profitOf(a)),
     [bets]
   );
 
@@ -129,6 +141,7 @@ export default function LiveTracker() {
         const existing = new Set(prev.filter((b) => b.externalId).map((b) => b.externalId));
         const fresh = arr.filter((b) => !b.externalId || !existing.has(b.externalId)).map((b) => ({
           id: uid(), externalId: b.externalId || null, date: b.date || todayStr(),
+          createdAt: b.createdAt || null,
           category: CATS[b.category] ? b.category : "skins", label: b.label || b.description || "Gamdom bet",
           stake: b.stake ?? 0, odds: b.odds ?? 1, result: RESULTS[b.result] ? b.result : "pendiente",
           profit: b.profit !== undefined ? b.profit : null,
@@ -206,7 +219,7 @@ export default function LiveTracker() {
               Fuente: Gamdom · sincronizado automáticamente
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_280px] gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_240px] gap-4">
               {/* Left: feed */}
               <div className="btr-card overflow-hidden" style={{ height: 560, display: "flex", flexDirection: "column" }}>
                 <div className="p-3" style={{ borderBottom: "1px solid var(--border)" }}>
@@ -231,7 +244,7 @@ export default function LiveTracker() {
                       <div key={b.id} className="row-hover px-3 py-2 flex items-start justify-between gap-2" style={{ borderLeft: `3px solid ${profit >= 0 ? "#35D07F" : "#E8283F"}`, borderBottom: "1px solid var(--border)" }}>
                         <div>
                           <div className="text-sm font-medium">{b.label}</div>
-                          <div className="text-xs mono" style={{ color: "var(--text-muted)" }}>{CATS[b.category].label} · {fmt(b.stake)} · {b.date}</div>
+                          <div className="text-xs mono" style={{ color: "var(--text-muted)" }}>{CATS[b.category].label} · {fmt(b.stake)} · {timeAgo(b.createdAt) || b.date}</div>
                         </div>
                         <div className="text-right">
                           <div className="mono text-sm font-semibold" style={{ color: profit > 0 ? "#35D07F" : profit < 0 ? "#E8283F" : "var(--text-muted)" }}>
@@ -256,13 +269,18 @@ export default function LiveTracker() {
                     Ver en Kick ↗
                   </a>
                 </div>
-                <div className="flex-1" style={{ background: "#000" }}>
+                <div className="flex-1" style={{ background: "#000", position: "relative", overflow: "hidden" }}>
                   <iframe
                     src={`https://player.kick.com/${kickChannel}`}
                     title={`Stream de ${kickChannel}`}
                     allow="autoplay; fullscreen"
                     allowFullScreen
-                    style={{ width: "100%", height: "100%", border: "none" }}
+                    style={{
+                      position: "absolute",
+                      top: "-8%", left: "-8%",
+                      width: "116%", height: "116%",
+                      border: "none",
+                    }}
                   />
                 </div>
               </div>
