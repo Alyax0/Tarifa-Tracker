@@ -22,29 +22,6 @@ const RESULTS = {
 // Juegos reales disponibles en Gamdom: los 7 Originals de la casa, más
 // slots confirmados de proveedores reales (Pragmatic Play, Hacksaw Gaming,
 // Nolimit City, NetEnt, Play'n GO, Playson) que sí están en su catálogo.
-const SLOTS = [
-  { name: "Crash", provider: "Gamdom Originals", grad: ["#0f2340", "#0a1420"] },
-  { name: "Dice", provider: "Gamdom Originals", grad: ["#122b4d", "#0a1420"] },
-  { name: "Roulette", provider: "Gamdom Originals", grad: ["#14315c", "#0a1420"] },
-  { name: "Hilo", provider: "Gamdom Originals", grad: ["#0f2340", "#0a1420"] },
-  { name: "Plinko", provider: "Gamdom Originals", grad: ["#122b4d", "#0a1420"] },
-  { name: "Mines", provider: "Gamdom Originals", grad: ["#14315c", "#0a1420"] },
-  { name: "Keno", provider: "Gamdom Originals", grad: ["#0f2340", "#0a1420"] },
-  { name: "Sweet Bonanza", provider: "Pragmatic Play", grad: ["#3d0f2d", "#1a0a15"] },
-  { name: "Gates of Olympus", provider: "Pragmatic Play", grad: ["#3d2b0f", "#1a140a"] },
-  { name: "Buffalo King", provider: "Pragmatic Play", grad: ["#2b1a0f", "#150d0a"] },
-  { name: "Zeus vs Hades: Gods of War", provider: "Pragmatic Play", grad: ["#12203d", "#0a111a"] },
-  { name: "Bullets and Bounty", provider: "Hacksaw Gaming", grad: ["#3d0f0f", "#1a0a0a"] },
-  { name: "Slayers Ink Boosted", provider: "Hacksaw Gaming", grad: ["#0f3d16", "#0a1a0d"] },
-  { name: "Fist of Destruction Boosted", provider: "Hacksaw Gaming", grad: ["#3d0f0f", "#1a0a0a"] },
-  { name: "Home of the Brave", provider: "Nolimit City", grad: ["#1a1a1a", "#0a0a0a"] },
-  { name: "Book of Dead", provider: "Play'n GO", grad: ["#3d2b0f", "#1a140a"] },
-  { name: "Gonzo's Quest", provider: "NetEnt", grad: ["#0f3d3d", "#0a1a1a"] },
-  { name: "Starburst", provider: "NetEnt", grad: ["#2b0f3d", "#140a1a"] },
-  { name: "100 Joker Staxx", provider: "Playson", grad: ["#3d260f", "#1a110a"] },
-  { name: "Most Wanted", provider: "Gamdom Exclusive", grad: ["#14315c", "#0a1420"] },
-];
-
 const uid = () => Math.random().toString(36).slice(2, 10);
 const fmt = (n) => {
   const num = Number(n || 0);
@@ -352,17 +329,29 @@ function SlotPicker() {
   const [highlight, setHighlight] = useState(0);
   const [spinning, setSpinning] = useState(false);
   const [picked, setPicked] = useState(null);
+  const [allGames, setAllGames] = useState([]);
+  const [gamesLoaded, setGamesLoaded] = useState(false);
   const intervalRef = useRef(null);
 
-  const providers = useMemo(() => [...new Set(SLOTS.map((s) => s.provider))], []);
+  useEffect(() => {
+    fetch("/api/games")
+      .then((r) => r.json())
+      .then((data) => {
+        setAllGames(Array.isArray(data.games) ? data.games : []);
+        setGamesLoaded(true);
+      })
+      .catch(() => setGamesLoaded(true));
+  }, []);
+
+  const providers = useMemo(() => [...new Set(allGames.map((s) => s.provider))].sort(), [allGames]);
 
   const filtered = useMemo(() => {
-    return SLOTS.filter((s) => {
+    return allGames.filter((s) => {
       const matchesQuery = s.name.toLowerCase().includes(query.toLowerCase());
       const matchesProvider = activeProviders.length === 0 || activeProviders.includes(s.provider);
       return matchesQuery && matchesProvider;
     });
-  }, [query, activeProviders]);
+  }, [allGames, query, activeProviders]);
 
   const toggleProvider = (p) => setActiveProviders((prev) => (prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]));
 
@@ -400,7 +389,7 @@ function SlotPicker() {
           SLOT <span style={{ color: "var(--accent)" }}>PICKER</span>
         </h1>
         <div className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
-          ¿No sabés qué jugar? Filtrá por proveedor y que el azar decida entre los Originals y slots reales de Gamdom. {SLOTS.length} juegos en la baraja.
+          ¿No sabés qué jugar? Filtrá por proveedor y que el azar decida entre los Originals y slots reales de Gamdom. {gamesLoaded ? allGames.length : "..."} juegos en la baraja.
         </div>
       </div>
 
@@ -411,10 +400,10 @@ function SlotPicker() {
 
       <div className="flex flex-wrap justify-center gap-2 mb-8">
         <button onClick={() => setActiveProviders([])} className="chip" style={{ background: activeProviders.length === 0 ? "var(--accent)" : "var(--panel-2)", color: activeProviders.length === 0 ? "#fff" : "var(--text-muted)" }}>
-          Todos {SLOTS.length}
+          Todos {allGames.length}
         </button>
         {providers.map((p) => {
-          const count = SLOTS.filter((s) => s.provider === p).length;
+          const count = allGames.filter((s) => s.provider === p).length;
           const active = activeProviders.includes(p);
           return (
             <button key={p} onClick={() => toggleProvider(p)} className="chip" style={{ background: active ? "var(--accent)" : "var(--panel-2)", color: active ? "#fff" : "var(--text-muted)" }}>
@@ -425,23 +414,34 @@ function SlotPicker() {
       </div>
 
       <div className="btr-card p-5 overflow-hidden mb-6" style={{ maxWidth: 980, margin: "0 auto" }}>
+        {!gamesLoaded ? (
+          <div className="text-center text-xs py-8" style={{ color: "var(--text-muted)" }}>Cargando catálogo de juegos...</div>
+        ) : (
         <div className="flex gap-3 overflow-x-hidden justify-center flex-wrap">
           {filtered.slice(0, 10).map((s, idx) => {
             const isActive = idx === highlight % Math.max(filtered.slice(0, 10).length, 1) && (spinning || picked);
             return (
               <div
-                key={s.name}
+                key={s.code || s.name}
                 className="slot-card flex-shrink-0 rounded-xl overflow-hidden relative"
                 style={{
                   width: 128, height: 158,
-                  background: `linear-gradient(160deg, ${s.grad[0]}, ${s.grad[1]})`,
+                  background: "var(--panel-2)",
                   border: isActive ? "2px solid var(--accent)" : "1px solid var(--border)",
                   boxShadow: isActive ? "0 0 20px rgba(47,111,237,0.45)" : "none",
                   transform: isActive ? "scale(1.06)" : "scale(1)",
                 }}
               >
-                <div className="absolute top-2 left-2 chip" style={{ background: "rgba(0,0,0,0.5)", color: "var(--text-muted)", fontSize: 9, padding: "2px 7px" }}>
-                  {s.provider === "Gamdom Originals" ? "ORIGINAL" : s.provider === "Gamdom Exclusive" ? "EXCLUSIVO" : s.provider}
+                {s.image ? (
+                  <img
+                    src={s.image}
+                    alt={s.name}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
+                    onError={(e) => { e.target.style.display = "none"; }}
+                  />
+                ) : null}
+                <div className="absolute top-2 left-2 chip" style={{ background: "rgba(0,0,0,0.6)", color: "var(--text-muted)", fontSize: 9, padding: "2px 7px" }}>
+                  {s.provider === "Gamdom Originals" ? "ORIGINAL" : s.provider}
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-2" style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.9), transparent)" }}>
                   <div className="text-xs font-semibold leading-tight">{s.name}</div>
@@ -450,7 +450,8 @@ function SlotPicker() {
             );
           })}
         </div>
-        {filtered.length === 0 && (
+        )}
+        {gamesLoaded && filtered.length === 0 && (
           <div className="text-center text-xs py-8" style={{ color: "var(--text-muted)" }}>Ningún juego coincide con tu búsqueda.</div>
         )}
       </div>
@@ -464,7 +465,9 @@ function SlotPicker() {
 
       {picked && (
         <div className="btr-card p-4 max-w-md mx-auto flex items-center gap-4">
-          <div className="rounded-lg flex-shrink-0" style={{ width: 64, height: 64, background: `linear-gradient(160deg, ${picked.grad[0]}, ${picked.grad[1]})` }} />
+          <div className="rounded-lg flex-shrink-0 overflow-hidden" style={{ width: 64, height: 64, background: "var(--panel-2)" }}>
+            {picked.image ? <img src={picked.image} alt={picked.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : null}
+          </div>
           <div>
             <div className="text-xs uppercase tracking-wider" style={{ color: "var(--accent)" }}>Te tocó</div>
             <div className="display text-2xl">{picked.name}</div>
