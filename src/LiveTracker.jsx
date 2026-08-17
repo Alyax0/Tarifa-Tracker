@@ -343,7 +343,11 @@ function SlotPicker() {
       .catch(() => setGamesLoaded(true));
   }, []);
 
-  const providers = useMemo(() => [...new Set(allGames.map((s) => s.provider))].sort(), [allGames]);
+  const providers = useMemo(() => {
+    const counts = {};
+    allGames.forEach((s) => { counts[s.provider] = (counts[s.provider] || 0) + 1; });
+    return Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 12);
+  }, [allGames]);
 
   const filtered = useMemo(() => {
     return allGames.filter((s) => {
@@ -413,39 +417,42 @@ function SlotPicker() {
         })}
       </div>
 
-      <div className="btr-card p-5 overflow-hidden mb-6" style={{ maxWidth: 980, margin: "0 auto" }}>
+      <div className="btr-card p-5 overflow-hidden mb-6 relative" style={{ maxWidth: 980, margin: "0 auto" }}>
         {!gamesLoaded ? (
           <div className="text-center text-xs py-8" style={{ color: "var(--text-muted)" }}>Cargando catálogo de juegos...</div>
         ) : (
-        <div className="flex gap-3 overflow-x-hidden justify-center flex-wrap">
+        <div className="flex gap-3 overflow-x-auto justify-start" style={{ scrollBehavior: "smooth" }}>
           {filtered.slice(0, 10).map((s, idx) => {
             const isActive = idx === highlight % Math.max(filtered.slice(0, 10).length, 1) && (spinning || picked);
             return (
-              <div
-                key={s.code || s.name}
-                className="slot-card flex-shrink-0 rounded-xl overflow-hidden relative"
-                style={{
-                  width: 128, height: 158,
-                  background: "var(--panel-2)",
-                  border: isActive ? "2px solid var(--accent)" : "1px solid var(--border)",
-                  boxShadow: isActive ? "0 0 20px rgba(47,111,237,0.45)" : "none",
-                  transform: isActive ? "scale(1.06)" : "scale(1)",
-                }}
-              >
-                {s.image ? (
-                  <img
-                    src={s.image}
-                    alt={s.name}
-                    style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
-                    onError={(e) => { e.target.style.display = "none"; }}
-                  />
-                ) : null}
-                <div className="absolute top-2 left-2 chip" style={{ background: "rgba(0,0,0,0.6)", color: "var(--text-muted)", fontSize: 9, padding: "2px 7px" }}>
-                  {s.provider === "Gamdom Originals" ? "ORIGINAL" : s.provider}
+              <div key={s.code || s.name} className="flex-shrink-0 flex flex-col items-center" style={{ width: 128 }}>
+                {isActive && <div style={{ width: 0, height: 0, borderLeft: "6px solid transparent", borderRight: "6px solid transparent", borderTop: "8px solid var(--accent)", marginBottom: 4 }} />}
+                <div
+                  className="slot-card rounded-xl overflow-hidden relative"
+                  style={{
+                    width: 128, height: 158,
+                    background: "var(--panel-2)",
+                    border: isActive ? "2px solid var(--accent)" : "1px solid var(--border)",
+                    boxShadow: isActive ? "0 0 20px rgba(47,111,237,0.45)" : "none",
+                    transform: isActive ? "scale(1.06)" : "scale(1)",
+                  }}
+                >
+                  {s.image ? (
+                    <img
+                      src={s.image}
+                      alt={s.name}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
+                      onError={(e) => { e.target.style.display = "none"; }}
+                    />
+                  ) : null}
+                  <div className="absolute top-2 left-2 chip" style={{ background: "rgba(0,0,0,0.6)", color: "var(--text-muted)", fontSize: 9, padding: "2px 7px" }}>
+                    {s.provider === "Gamdom Originals" ? "ORIGINAL" : s.provider}
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-2" style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.9), transparent)" }}>
+                    <div className="text-xs font-semibold leading-tight">{s.name}</div>
+                  </div>
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 p-2" style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.9), transparent)" }}>
-                  <div className="text-xs font-semibold leading-tight">{s.name}</div>
-                </div>
+                {isActive && <div style={{ width: 0, height: 0, borderLeft: "6px solid transparent", borderRight: "6px solid transparent", borderBottom: "8px solid var(--accent)", marginTop: 4 }} />}
               </div>
             );
           })}
