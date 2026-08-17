@@ -326,9 +326,9 @@ export default function LiveTracker() {
 function SlotPicker() {
   const [query, setQuery] = useState("");
   const [activeProviders, setActiveProviders] = useState([]);
-  const [highlight, setHighlight] = useState(0);
   const [spinning, setSpinning] = useState(false);
-  const [picked, setPicked] = useState(null);
+  const [reelGame, setReelGame] = useState(null); // lo que se ve en el carrete (cambia durante el spin)
+  const [picked, setPicked] = useState(null); // resultado final confirmado
   const [allGames, setAllGames] = useState([]);
   const [gamesLoaded, setGamesLoaded] = useState(false);
   const intervalRef = useRef(null);
@@ -367,12 +367,13 @@ function SlotPicker() {
     let delay = 70;
     const totalTicks = 22 + Math.floor(Math.random() * 6);
     const tick = () => {
-      setHighlight((h) => (h + 1) % filtered.length);
+      // Cambia la imagen del carrete a un juego al azar (efecto tragamonedas)
+      setReelGame(filtered[Math.floor(Math.random() * filtered.length)]);
       ticks++;
       if (ticks >= totalTicks) {
-        const finalIdx = Math.floor(Math.random() * filtered.length);
-        setHighlight(finalIdx);
-        setPicked(filtered[finalIdx]);
+        const final = filtered[Math.floor(Math.random() * filtered.length)];
+        setReelGame(final);
+        setPicked(final);
         setSpinning(false);
         return;
       }
@@ -417,46 +418,38 @@ function SlotPicker() {
         })}
       </div>
 
-      <div className="btr-card p-5 overflow-hidden mb-6 relative" style={{ maxWidth: 980, margin: "0 auto" }}>
+      <div className="btr-card p-8 overflow-hidden mb-6 relative flex items-center justify-center" style={{ maxWidth: 500, minHeight: 280, margin: "0 auto" }}>
         {!gamesLoaded ? (
           <div className="text-center text-xs py-8" style={{ color: "var(--text-muted)" }}>Cargando catálogo de juegos...</div>
+        ) : !reelGame ? (
+          <div className="text-center text-xs py-8" style={{ color: "var(--text-muted)" }}>Apretá "Girar" para elegir un juego al azar.</div>
         ) : (
-        <div className="flex gap-3 overflow-x-auto justify-start" style={{ scrollBehavior: "smooth" }}>
-          {filtered.slice(0, 10).map((s, idx) => {
-            const isActive = idx === highlight % Math.max(filtered.slice(0, 10).length, 1) && (spinning || picked);
-            return (
-              <div key={s.code || s.name} className="flex-shrink-0 flex flex-col items-center" style={{ width: 128 }}>
-                {isActive && <div style={{ width: 0, height: 0, borderLeft: "6px solid transparent", borderRight: "6px solid transparent", borderTop: "8px solid var(--accent)", marginBottom: 4 }} />}
-                <div
-                  className="slot-card rounded-xl overflow-hidden relative"
-                  style={{
-                    width: 128, height: 158,
-                    background: "var(--panel-2)",
-                    border: isActive ? "2px solid var(--accent)" : "1px solid var(--border)",
-                    boxShadow: isActive ? "0 0 20px rgba(47,111,237,0.45)" : "none",
-                    transform: isActive ? "scale(1.06)" : "scale(1)",
-                  }}
-                >
-                  {s.image ? (
-                    <img
-                      src={s.image}
-                      alt={s.name}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
-                      onError={(e) => { e.target.style.display = "none"; }}
-                    />
-                  ) : null}
-                  <div className="absolute top-2 left-2 chip" style={{ background: "rgba(0,0,0,0.6)", color: "var(--text-muted)", fontSize: 9, padding: "2px 7px" }}>
-                    {s.provider === "Gamdom Originals" ? "ORIGINAL" : s.provider}
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-2" style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.9), transparent)" }}>
-                    <div className="text-xs font-semibold leading-tight">{s.name}</div>
-                  </div>
-                </div>
-                {isActive && <div style={{ width: 0, height: 0, borderLeft: "6px solid transparent", borderRight: "6px solid transparent", borderBottom: "8px solid var(--accent)", marginTop: 4 }} />}
-              </div>
-            );
-          })}
-        </div>
+          <div
+            className="rounded-xl overflow-hidden relative"
+            style={{
+              width: 220, height: 270,
+              background: "var(--panel-2)",
+              border: spinning ? "2px solid var(--border)" : "2px solid var(--accent)",
+              boxShadow: spinning ? "none" : "0 0 30px rgba(47,111,237,0.5)",
+              transition: "border-color 0.2s, box-shadow 0.2s",
+            }}
+          >
+            {reelGame.image ? (
+              <img
+                key={reelGame.code || reelGame.name}
+                src={reelGame.image}
+                alt={reelGame.name}
+                style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
+                onError={(e) => { e.target.style.display = "none"; }}
+              />
+            ) : null}
+            <div className="absolute top-2 left-2 chip" style={{ background: "rgba(0,0,0,0.6)", color: "var(--text-muted)", fontSize: 10, padding: "2px 8px" }}>
+              {reelGame.provider === "Gamdom Originals" ? "ORIGINAL" : reelGame.provider}
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 p-3" style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.9), transparent)" }}>
+              <div className="text-sm font-semibold leading-tight">{reelGame.name}</div>
+            </div>
+          </div>
         )}
         {gamesLoaded && filtered.length === 0 && (
           <div className="text-center text-xs py-8" style={{ color: "var(--text-muted)" }}>Ningún juego coincide con tu búsqueda.</div>
