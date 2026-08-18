@@ -323,12 +323,15 @@ export default function LiveTracker() {
   );
 }
 
+const REEL_COUNT = 5;
+const CENTER_INDEX = 2;
+
 function SlotPicker() {
   const [query, setQuery] = useState("");
   const [activeProviders, setActiveProviders] = useState([]);
   const [spinning, setSpinning] = useState(false);
-  const [reelGame, setReelGame] = useState(null); // lo que se ve en el carrete (cambia durante el spin)
-  const [picked, setPicked] = useState(null); // resultado final confirmado
+  const [reels, setReels] = useState(Array(REEL_COUNT).fill(null)); // 5 tarjetas visibles
+  const [picked, setPicked] = useState(null); // resultado final confirmado (siempre = reels[CENTER_INDEX])
   const [allGames, setAllGames] = useState([]);
   const [gamesLoaded, setGamesLoaded] = useState(false);
   const intervalRef = useRef(null);
@@ -346,7 +349,7 @@ function SlotPicker() {
   const providers = useMemo(() => {
     const counts = {};
     allGames.forEach((s) => { counts[s.provider] = (counts[s.provider] || 0) + 1; });
-    return Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 12);
+    return Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
   }, [allGames]);
 
   const filtered = useMemo(() => {
@@ -367,12 +370,19 @@ function SlotPicker() {
     let delay = 70;
     const totalTicks = 22 + Math.floor(Math.random() * 6);
     const tick = () => {
-      // Cambia la imagen del carrete a un juego al azar (efecto tragamonedas)
-      setReelGame(filtered[Math.floor(Math.random() * filtered.length)]);
+      // Los 5 carretes cambian de imagen al azar en cada tick (efecto tragamonedas)
+      setReels(
+        Array.from({ length: REEL_COUNT }, () => filtered[Math.floor(Math.random() * filtered.length)])
+      );
       ticks++;
       if (ticks >= totalTicks) {
+        // El del centro SIEMPRE termina siendo el resultado real -> nunca hay desincronización
         const final = filtered[Math.floor(Math.random() * filtered.length)];
-        setReelGame(final);
+        setReels((prev) => {
+          const next = [...prev];
+          next[CENTER_INDEX] = final;
+          return next;
+        });
         setPicked(final);
         setSpinning(false);
         return;
@@ -400,7 +410,7 @@ function SlotPicker() {
 
       <div className="max-w-xl mx-auto mt-6 mb-4 relative">
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-muted)" }} />
-        <input className="btr-input w-full pl-9" placeholder="Buscar un juego..." value={query} onChange={(e) => setQuery(e.target.value)} />
+        <input className="btr-input w-full" style={{ paddingLeft: 36 }} placeholder="Buscar un juego..." value={query} onChange={(e) => setQuery(e.target.value)} />
       </div>
 
       <div className="flex flex-wrap justify-center gap-2 mb-8">
@@ -418,41 +428,51 @@ function SlotPicker() {
         })}
       </div>
 
-      <div className="btr-card p-8 overflow-hidden mb-6 relative flex items-center justify-center" style={{ maxWidth: 500, minHeight: 280, margin: "0 auto" }}>
+      <div className="btr-card p-6 overflow-hidden mb-6 relative flex items-center justify-center" style={{ maxWidth: 820, margin: "0 auto" }}>
         {!gamesLoaded ? (
           <div className="text-center text-xs py-8" style={{ color: "var(--text-muted)" }}>Cargando catálogo de juegos...</div>
-        ) : !reelGame ? (
-          <div className="text-center text-xs py-8" style={{ color: "var(--text-muted)" }}>Apretá "Girar" para elegir un juego al azar.</div>
-        ) : (
-          <div
-            className="rounded-xl overflow-hidden relative"
-            style={{
-              width: 220, height: 270,
-              background: "var(--panel-2)",
-              border: spinning ? "2px solid var(--border)" : "2px solid var(--accent)",
-              boxShadow: spinning ? "none" : "0 0 30px rgba(47,111,237,0.5)",
-              transition: "border-color 0.2s, box-shadow 0.2s",
-            }}
-          >
-            {reelGame.image ? (
-              <img
-                key={reelGame.code || reelGame.name}
-                src={reelGame.image}
-                alt={reelGame.name}
-                style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
-                onError={(e) => { e.target.style.display = "none"; }}
-              />
-            ) : null}
-            <div className="absolute top-2 left-2 chip" style={{ background: "rgba(0,0,0,0.6)", color: "var(--text-muted)", fontSize: 10, padding: "2px 8px" }}>
-              {reelGame.provider === "Gamdom Originals" ? "ORIGINAL" : reelGame.provider}
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 p-3" style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.9), transparent)" }}>
-              <div className="text-sm font-semibold leading-tight">{reelGame.name}</div>
-            </div>
-          </div>
-        )}
-        {gamesLoaded && filtered.length === 0 && (
+        ) : gamesLoaded && filtered.length === 0 ? (
           <div className="text-center text-xs py-8" style={{ color: "var(--text-muted)" }}>Ningún juego coincide con tu búsqueda.</div>
+        ) : (
+          <div className="flex gap-3 items-end justify-center">
+            {reels.map((g, idx) => {
+              const isCenter = idx === CENTER_INDEX;
+              return (
+                <div key={idx} className="flex flex-col items-center" style={{ width: isCenter ? 150 : 110 }}>
+                  {isCenter && (
+                    <div style={{ width: 0, height: 0, borderLeft: "7px solid transparent", borderRight: "7px solid transparent", borderTop: "9px solid var(--accent)", marginBottom: 4 }} />
+                  )}
+                  <div
+                    className="rounded-xl overflow-hidden relative"
+                    style={{
+                      width: isCenter ? 150 : 110,
+                      height: isCenter ? 185 : 135,
+                      background: "var(--panel-2)",
+                      border: isCenter ? "2px solid var(--accent)" : "1px solid var(--border)",
+                      boxShadow: isCenter && !spinning && picked ? "0 0 25px rgba(47,111,237,0.55)" : "none",
+                      opacity: isCenter ? 1 : 0.55,
+                      transition: "box-shadow 0.2s",
+                    }}
+                  >
+                    {g?.image ? (
+                      <img
+                        key={g.code || g.name}
+                        src={g.image}
+                        alt={g.name}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
+                        onError={(e) => { e.target.style.display = "none"; }}
+                      />
+                    ) : null}
+                    {g && isCenter && (
+                      <div className="absolute bottom-0 left-0 right-0 p-2" style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.9), transparent)" }}>
+                        <div className="text-xs font-semibold leading-tight">{g.name}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
 
