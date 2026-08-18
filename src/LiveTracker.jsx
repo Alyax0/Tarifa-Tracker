@@ -362,22 +362,49 @@ function SlotPicker() {
 
   const toggleProvider = (p) => setActiveProviders((prev) => (prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]));
 
+  // Precarga en el navegador un puñado de imágenes ANTES de mostrarlas,
+  // para que durante el giro ya estén en caché y no se vean en blanco.
+  const preloadImages = (games) => {
+    games.forEach((g) => {
+      if (g?.image) {
+        const img = new Image();
+        img.src = g.image;
+      }
+    });
+  };
+
   const spin = () => {
     if (filtered.length === 0 || spinning) return;
     setSpinning(true);
     setPicked(null);
+
+    // Elegimos un puñado de candidatos al azar (con imagen) y los
+    // precargamos — la animación va a girar SOLO entre estos, así ya
+    // están cacheados cuando aparecen en pantalla.
+    const withImage = filtered.filter((g) => g.image);
+    const pool = [];
+    const poolSize = Math.min(40, withImage.length || filtered.length);
+    const source = withImage.length ? withImage : filtered;
+    for (let i = 0; i < poolSize; i++) {
+      pool.push(source[Math.floor(Math.random() * source.length)]);
+    }
+    preloadImages(pool);
+
     let ticks = 0;
     let delay = 70;
     const totalTicks = 22 + Math.floor(Math.random() * 6);
+    const startTicking = () => {
+      intervalRef.current = setTimeout(tick, delay);
+    };
     const tick = () => {
       // Los 5 carretes cambian de imagen al azar en cada tick (efecto tragamonedas)
       setReels(
-        Array.from({ length: REEL_COUNT }, () => filtered[Math.floor(Math.random() * filtered.length)])
+        Array.from({ length: REEL_COUNT }, () => pool[Math.floor(Math.random() * pool.length)])
       );
       ticks++;
       if (ticks >= totalTicks) {
         // El del centro SIEMPRE termina siendo el resultado real -> nunca hay desincronización
-        const final = filtered[Math.floor(Math.random() * filtered.length)];
+        const final = pool[Math.floor(Math.random() * pool.length)];
         setReels((prev) => {
           const next = [...prev];
           next[CENTER_INDEX] = final;
@@ -391,7 +418,8 @@ function SlotPicker() {
       if (ticks > totalTicks - 8) delay += 22;
       intervalRef.current = setTimeout(tick, delay);
     };
-    intervalRef.current = setTimeout(tick, delay);
+    // Pausa breve inicial para darle tiempo a las imágenes precargadas
+    intervalRef.current = setTimeout(startTicking, 400);
   };
 
   useEffect(() => () => clearTimeout(intervalRef.current), []);
