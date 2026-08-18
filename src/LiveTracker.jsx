@@ -323,18 +323,25 @@ export default function LiveTracker() {
   );
 }
 
-const REEL_COUNT = 5;
-const CENTER_INDEX = 2;
+const CARD_WIDTH = 130;
+const CARD_HEIGHT = 165;
+const CARD_GAP = 10;
+const STEP = CARD_WIDTH + CARD_GAP;
+const LEAD_COUNT = 28; // cuántas tarjetas "de relleno" antes de la ganadora
+const TRAIL_COUNT = 6; // relleno después, para que no se vea vacío al frenar
+const SPIN_MS = 3600;
 
 function SlotPicker() {
   const [query, setQuery] = useState("");
   const [activeProviders, setActiveProviders] = useState([]);
   const [spinning, setSpinning] = useState(false);
-  const [reels, setReels] = useState(Array(REEL_COUNT).fill(null)); // 5 tarjetas visibles
-  const [picked, setPicked] = useState(null); // resultado final confirmado (siempre = reels[CENTER_INDEX])
+  const [strip, setStrip] = useState([]); // contenido de la tira completa
+  const [picked, setPicked] = useState(null); // resultado final confirmado
   const [allGames, setAllGames] = useState([]);
   const [gamesLoaded, setGamesLoaded] = useState(false);
-  const intervalRef = useRef(null);
+  const stripRef = useRef(null);
+  const viewportRef = useRef(null);
+  const timeoutsRef = useRef([]);
 
   useEffect(() => {
     fetch("/api/games")
@@ -362,8 +369,6 @@ function SlotPicker() {
 
   const toggleProvider = (p) => setActiveProviders((prev) => (prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]));
 
-  // Precarga en el navegador un puñado de imágenes ANTES de mostrarlas,
-  // para que durante el giro ya estén en caché y no se vean en blanco.
   const preloadImages = (games) => {
     games.forEach((g) => {
       if (g?.image) {
@@ -373,56 +378,61 @@ function SlotPicker() {
     });
   };
 
+  const clearAllTimeouts = () => {
+    timeoutsRef.current.forEach(clearTimeout);
+    timeoutsRef.current = [];
+  };
+
   const spin = () => {
     if (filtered.length === 0 || spinning) return;
+    clearAllTimeouts();
     setSpinning(true);
     setPicked(null);
 
-    // Elegimos un puñado de candidatos al azar (con imagen) y los
-    // precargamos — la animación va a girar SOLO entre estos, así ya
-    // están cacheados cuando aparecen en pantalla.
+    // Pool chico de candidatos (con imagen) para precargar, y con eso
+    // armamos toda la tira — así todo lo que se ve ya está en caché.
     const withImage = filtered.filter((g) => g.image);
-    const pool = [];
-    const poolSize = Math.min(40, withImage.length || filtered.length);
     const source = withImage.length ? withImage : filtered;
-    for (let i = 0; i < poolSize; i++) {
-      pool.push(source[Math.floor(Math.random() * source.length)]);
-    }
+    const pool = Array.from({ length: Math.min(45, source.length) }, () => source[Math.floor(Math.random() * source.length)]);
     preloadImages(pool);
 
-    let ticks = 0;
-    let delay = 70;
-    const totalTicks = 22 + Math.floor(Math.random() * 6);
-    const startTicking = () => {
-      intervalRef.current = setTimeout(tick, delay);
-    };
-    const tick = () => {
-      // Los 5 carretes cambian de imagen al azar en cada tick (efecto tragamonedas)
-      setReels(
-        Array.from({ length: REEL_COUNT }, () => pool[Math.floor(Math.random() * pool.length)])
-      );
-      ticks++;
-      if (ticks >= totalTicks) {
-        // El del centro SIEMPRE termina siendo el resultado real -> nunca hay desincronización
-        const final = pool[Math.floor(Math.random() * pool.length)];
-        setReels((prev) => {
-          const next = [...prev];
-          next[CENTER_INDEX] = final;
-          return next;
-        });
-        setPicked(final);
-        setSpinning(false);
-        return;
-      }
-      // Frena gradualmente hacia el final, como una ruleta real
-      if (ticks > totalTicks - 8) delay += 22;
-      intervalRef.current = setTimeout(tick, delay);
-    };
-    // Pausa breve inicial para darle tiempo a las imágenes precargadas
-    intervalRef.current = setTimeout(startTicking, 400);
+    const finalPick = pool[Math.floor(Math.random() * pool.length)];
+    const newStrip = [
+      ...Array.from({ length: LEAD_COUNT }, () => pool[Math.floor(Math.random() * pool.length)]),
+      finalPick,
+      ...Array.from({ length: TRAIL_COUNT }, () => pool[Math.floor(Math.random() * pool.length)]),
+    ];
+    setStrip(newStrip);
+
+    // Esperamos un instante (imágenes precargando + que React pinte la
+    // tira nueva) antes de animar el deslizamiento.
+    const t1 = setTimeout(() => {
+      const el = stripRef.current;
+      const viewport = viewportRef.current;
+      if (!el || !viewport) return;
+
+      el.style.transition = "none";
+      el.style.transform = "translateX(0px)";
+      void el.offsetWidth; // forzar reflow para que el reset se aplique antes de animar
+
+      const viewportWidth = viewport.clientWidth;
+      const targetOffset = (viewportWidth / 2 - CARD_WIDTH / 2) - LEAD_COUNT * STEP;
+
+      requestAnimationFrame(() => {
+        el.style.transition = `transform ${SPIN_MS}ms cubic-bezier(0.12, 0.68, 0.15, 1)`;
+        el.style.transform = `translateX(${targetOffset}px)`;
+      });
+    }, 350);
+
+    const t2 = setTimeout(() => {
+      setSpinning(false);
+      setPicked(finalPick);
+    }, 350 + SPIN_MS + 100);
+
+    timeoutsRef.current.push(t1, t2);
   };
 
-  useEffect(() => () => clearTimeout(intervalRef.current), []);
+  useEffect(() => () => clearAllTimeouts(), []);
 
   return (
     <div>
@@ -456,62 +466,65 @@ function SlotPicker() {
         })}
       </div>
 
-      <div className="btr-card p-6 overflow-hidden mb-6 relative flex items-center justify-center" style={{ maxWidth: 820, margin: "0 auto" }}>
+      <div className="btr-card p-4 mb-6 relative" style={{ maxWidth: 820, margin: "0 auto" }}>
         {!gamesLoaded ? (
-          <div className="text-center text-xs py-8" style={{ color: "var(--text-muted)" }}>Cargando catálogo de juegos...</div>
-        ) : gamesLoaded && filtered.length === 0 ? (
-          <div className="text-center text-xs py-8" style={{ color: "var(--text-muted)" }}>Ningún juego coincide con tu búsqueda.</div>
+          <div className="text-center text-xs py-16" style={{ color: "var(--text-muted)" }}>Cargando catálogo de juegos...</div>
+        ) : filtered.length === 0 ? (
+          <div className="text-center text-xs py-16" style={{ color: "var(--text-muted)" }}>Ningún juego coincide con tu búsqueda.</div>
+        ) : strip.length === 0 ? (
+          <div className="text-center text-xs py-16" style={{ color: "var(--text-muted)" }}>Apretá "Girar" para elegir un juego al azar.</div>
         ) : (
-          <div className="flex gap-3 items-end justify-center">
-            {reels.map((g, idx) => {
-              const isCenter = idx === CENTER_INDEX;
-              return (
-                <div key={idx} className="flex flex-col items-center" style={{ width: isCenter ? 150 : 110 }}>
-                  {isCenter && (
-                    <div style={{ width: 0, height: 0, borderLeft: "7px solid transparent", borderRight: "7px solid transparent", borderTop: "9px solid var(--accent)", marginBottom: 4 }} />
-                  )}
+          <div ref={viewportRef} className="relative overflow-hidden" style={{ height: CARD_HEIGHT }}>
+            {/* flechita fija, no se mueve — solo la tira de abajo se desliza */}
+            <div className="absolute z-10" style={{ top: -2, left: "50%", transform: "translateX(-50%)", width: 0, height: 0, borderLeft: "7px solid transparent", borderRight: "7px solid transparent", borderTop: "9px solid var(--accent)" }} />
+            <div className="absolute z-10" style={{ bottom: -2, left: "50%", transform: "translateX(-50%)", width: 0, height: 0, borderLeft: "7px solid transparent", borderRight: "7px solid transparent", borderBottom: "9px solid var(--accent)" }} />
+
+            <div ref={stripRef} className="flex absolute top-0 left-0" style={{ gap: CARD_GAP, transform: "translateX(0px)" }}>
+              {strip.map((g, idx) => {
+                const isWinner = idx === LEAD_COUNT;
+                const settled = !spinning && picked;
+                return (
                   <div
-                    className="rounded-xl overflow-hidden relative"
+                    key={idx}
+                    className="rounded-xl overflow-hidden relative flex-shrink-0"
                     style={{
-                      width: isCenter ? 150 : 110,
-                      height: isCenter ? 185 : 135,
+                      width: CARD_WIDTH,
+                      height: CARD_HEIGHT,
                       background: "var(--panel-2)",
-                      border: isCenter ? "2px solid var(--accent)" : "1px solid var(--border)",
-                      boxShadow: isCenter && !spinning && picked ? "0 0 25px rgba(47,111,237,0.55)" : "none",
-                      opacity: isCenter ? 1 : 0.55,
-                      transition: "box-shadow 0.2s",
+                      border: settled && isWinner ? "2px solid var(--accent)" : "1px solid var(--border)",
+                      boxShadow: settled && isWinner ? "0 0 22px rgba(47,111,237,0.55)" : "none",
+                      opacity: settled && !isWinner ? 0.35 : 1,
+                      filter: settled && !isWinner ? "grayscale(0.6)" : "none",
+                      transition: "opacity 0.4s, filter 0.4s, border-color 0.4s, box-shadow 0.4s",
                     }}
                   >
                     {g?.image ? (
                       <img
-                        key={g.code || g.name}
                         src={g.image}
                         alt={g.name}
                         style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
                         onError={(e) => { e.target.style.display = "none"; }}
                       />
                     ) : null}
-                    {g && isCenter && (
-                      <div className="absolute bottom-0 left-0 right-0 p-2" style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.9), transparent)" }}>
-                        <div className="text-xs font-semibold leading-tight">{g.name}</div>
-                      </div>
-                    )}
+                    <div className="absolute bottom-0 left-0 right-0 p-2" style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.9), transparent)" }}>
+                      <div className="text-xs font-semibold leading-tight">{g?.name}</div>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
 
       <div className="text-center mb-8">
-        <button onClick={spin} disabled={filtered.length === 0} className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium" style={{ background: "var(--accent)", color: "#fff", opacity: filtered.length === 0 ? 0.5 : 1 }}>
+        <button onClick={spin} disabled={filtered.length === 0 || spinning} className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium" style={{ background: "var(--accent)", color: "#fff", opacity: filtered.length === 0 || spinning ? 0.6 : 1 }}>
           <Shuffle size={16} /> {spinning ? "Girando..." : picked ? "Girar de nuevo" : "Girar"}
         </button>
         <div className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>{filtered.length} juegos en juego</div>
       </div>
 
-      {picked && (
+      {picked && !spinning && (
         <div className="btr-card p-4 max-w-md mx-auto flex items-center gap-4">
           <div className="rounded-lg flex-shrink-0 overflow-hidden" style={{ width: 64, height: 64, background: "var(--panel-2)" }}>
             {picked.image ? <img src={picked.image} alt={picked.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : null}
