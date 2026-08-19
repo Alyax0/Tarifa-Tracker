@@ -434,6 +434,20 @@ function SlotPicker() {
 
   useEffect(() => () => clearAllTimeouts(), []);
 
+  // Al cargar, mostramos una tira inicial con imágenes al azar (sin ganador
+  // marcado) en vez de dejar el espacio vacío hasta el primer "Girar".
+  useEffect(() => {
+    if (gamesLoaded && filtered.length > 0 && strip.length === 0 && !spinning) {
+      const withImage = filtered.filter((g) => g.image);
+      const source = withImage.length ? withImage : filtered;
+      const initial = Array.from(
+        { length: LEAD_COUNT + 1 + TRAIL_COUNT },
+        () => source[Math.floor(Math.random() * source.length)]
+      );
+      setStrip(initial);
+    }
+  }, [gamesLoaded, filtered, strip.length, spinning]);
+
   return (
     <div>
       <div className="text-center mb-2">
