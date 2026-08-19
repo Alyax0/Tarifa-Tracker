@@ -389,19 +389,18 @@ function SlotPicker() {
     setSpinning(true);
     setPicked(null);
 
-    // Pool chico de candidatos (con imagen) para precargar, y con eso
-    // armamos toda la tira — así todo lo que se ve ya está en caché.
+    // Elegimos las imágenes de la tira directo de TODO el catálogo
+    // filtrado (sin límite artificial), y precargamos justo esas.
     const withImage = filtered.filter((g) => g.image);
     const source = withImage.length ? withImage : filtered;
-    const pool = Array.from({ length: Math.min(45, source.length) }, () => source[Math.floor(Math.random() * source.length)]);
-    preloadImages(pool);
 
-    const finalPick = pool[Math.floor(Math.random() * pool.length)];
+    const finalPick = source[Math.floor(Math.random() * source.length)];
     const newStrip = [
-      ...Array.from({ length: LEAD_COUNT }, () => pool[Math.floor(Math.random() * pool.length)]),
+      ...Array.from({ length: LEAD_COUNT }, () => source[Math.floor(Math.random() * source.length)]),
       finalPick,
-      ...Array.from({ length: TRAIL_COUNT }, () => pool[Math.floor(Math.random() * pool.length)]),
+      ...Array.from({ length: TRAIL_COUNT }, () => source[Math.floor(Math.random() * source.length)]),
     ];
+    preloadImages(newStrip);
     setStrip(newStrip);
 
     // Esperamos un instante (imágenes precargando + que React pinte la
