@@ -162,7 +162,7 @@ export default function LiveTracker() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
         :root {
-          --bg: #0A0A0C; --panel: #131316; --panel-2: #1A1A1E; --border: #262629;
+          --bg: #000000; --panel: #131316; --panel-2: #1A1A1E; --border: #262629;
           --accent: #2F6FED; --accent-dim: #123058;
           --text: #F2F2F0; --text-muted: #8A8A90;
           --font-display: 'Archivo Black', sans-serif; --font-body: 'Archivo Black', sans-serif; --font-mono: 'JetBrains Mono', monospace;
@@ -177,6 +177,7 @@ export default function LiveTracker() {
         .navtab { padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
         .row-hover:hover { background: var(--panel-2); }
         .slot-card { transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
+        .neon-outline { color: transparent; -webkit-text-stroke: 2px var(--accent); text-shadow: 0 0 8px var(--accent), 0 0 22px var(--accent), 0 0 45px rgba(47,111,237,0.6); }
         .slot-card:hover { transform: translateY(-3px); }
         ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
       `}</style>
@@ -199,6 +200,8 @@ export default function LiveTracker() {
           <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ border: "1px solid var(--border)" }}>
             <div className={`navtab ${view === "feed" ? "" : ""}`} style={{ background: view === "feed" ? "var(--accent)" : "transparent", color: view === "feed" ? "#fff" : "var(--text-muted)" }} onClick={() => setView("feed")}>Live Feed</div>
             <div className="navtab" style={{ background: view === "picker" ? "var(--accent)" : "transparent", color: view === "picker" ? "#fff" : "var(--text-muted)" }} onClick={() => setView("picker")}>Slot Picker</div>
+            <a href="https://tarifagiveaway.com/es/home" target="_blank" rel="noreferrer" className="navtab" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Tarifagiveaway</a>
+            <a href="https://gamdom.com/r/tarifa" target="_blank" rel="noreferrer" className="navtab" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Gamdom</a>
           </div>
           <div className="flex items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
             <RefreshCw size={12} className={syncStatus === "esperando" ? "animate-spin" : ""} style={{ color: syncStatus === "error" ? "#E8283F" : "#35D07F" }} />
@@ -453,7 +456,7 @@ function SlotPicker() {
       <div className="text-center mb-2">
         <div className="text-xs uppercase tracking-widest" style={{ color: "var(--accent)" }}>Gamdom</div>
         <h1 className="display text-6xl">
-          SLOT <span style={{ color: "var(--accent)" }}>PICKER</span>
+          SLOT <span className="neon-outline">PICKER</span>
         </h1>
         <div className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
           ¿No sabés qué jugar? Filtrá por proveedor y que el azar decida entre los Originals y slots reales de Gamdom. {gamesLoaded ? allGames.length : "..."} juegos en la baraja.
@@ -480,7 +483,7 @@ function SlotPicker() {
         })}
       </div>
 
-      <div className="btr-card p-4 mb-10 relative" style={{ maxWidth: 1192, margin: "0 auto 40px auto" }}>
+      <div className="btr-card p-4 mb-10 relative" style={{ maxWidth: 1192, margin: "0 auto 40px auto", border: "1px solid var(--accent)", boxShadow: "0 0 25px rgba(47,111,237,0.45), inset 0 0 30px rgba(47,111,237,0.08)" }}>
         {!gamesLoaded ? (
           <div className="text-center text-xs py-16" style={{ color: "var(--text-muted)" }}>Cargando catálogo de juegos...</div>
         ) : filtered.length === 0 ? (
