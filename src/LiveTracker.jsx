@@ -502,7 +502,7 @@ function SlotPicker() {
                         key={`${idx}-${g.code || g.name}`}
                         src={g.image}
                         alt={g.name}
-                        style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
+                        style={{ width: "100%", height: "100%", objectFit: "contain", position: "absolute", inset: 0 }}
                         onError={(e) => { e.target.style.display = "none"; }}
                       />
                     ) : null}
@@ -527,7 +527,7 @@ function SlotPicker() {
       {picked && !spinning && (
         <div className="btr-card p-4 max-w-md mx-auto flex items-center gap-4">
           <div className="rounded-lg flex-shrink-0 overflow-hidden" style={{ width: 64, height: 64, background: "var(--panel-2)" }}>
-            {picked.image ? <img key={picked.code || picked.name} src={picked.image} alt={picked.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : null}
+            {picked.image ? <img key={picked.code || picked.name} src={picked.image} alt={picked.name} style={{ width: "100%", height: "100%", objectFit: "contain" }} /> : null}
           </div>
           <div>
             <div className="text-xs uppercase tracking-wider" style={{ color: "var(--accent)" }}>Te tocó</div>
