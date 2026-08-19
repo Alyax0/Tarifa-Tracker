@@ -165,7 +165,7 @@ export default function LiveTracker() {
           --bg: #0A0A0C; --panel: #131316; --panel-2: #1A1A1E; --border: #262629;
           --accent: #2F6FED; --accent-dim: #123058;
           --text: #F2F2F0; --text-muted: #8A8A90;
-          --font-display: 'Archivo Black', sans-serif; --font-body: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace;
+          --font-display: 'Archivo Black', sans-serif; --font-body: 'Archivo Black', sans-serif; --font-mono: 'JetBrains Mono', monospace;
         }
         .mono { font-family: var(--font-mono); }
         .display { font-family: var(--font-display); letter-spacing: -0.02em; line-height: 0.92; }
@@ -173,6 +173,7 @@ export default function LiveTracker() {
         .btr-input:focus { border-color: var(--accent); }
         .btr-card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; }
         .chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 100px; font-size: 12px; font-weight: 500; }
+        .provider-chip { display: inline-flex; align-items: center; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; transition: background 0.15s; }
         .navtab { padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
         .row-hover:hover { background: var(--panel-2); }
         .slot-card { transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
@@ -451,21 +452,21 @@ function SlotPicker() {
       </div>
 
       <div className="flex flex-wrap justify-center gap-2 mb-8">
-        <button onClick={() => setActiveProviders([])} className="chip" style={{ background: activeProviders.length === 0 ? "var(--accent)" : "var(--panel-2)", color: activeProviders.length === 0 ? "#fff" : "var(--text-muted)" }}>
-          Todos {allGames.length}
+        <button onClick={() => setActiveProviders([])} className="provider-chip" style={{ background: activeProviders.length === 0 ? "var(--accent)" : "var(--panel-2)", color: "#fff" }}>
+          Todos <span style={{ opacity: 0.65, fontWeight: 400, marginLeft: 4 }}>{allGames.length}</span>
         </button>
         {providers.map((p) => {
           const count = allGames.filter((s) => s.provider === p).length;
           const active = activeProviders.includes(p);
           return (
-            <button key={p} onClick={() => toggleProvider(p)} className="chip" style={{ background: active ? "var(--accent)" : "var(--panel-2)", color: active ? "#fff" : "var(--text-muted)" }}>
-              {p} {count}
+            <button key={p} onClick={() => toggleProvider(p)} className="provider-chip" style={{ background: active ? "var(--accent)" : "var(--panel-2)", color: "#fff" }}>
+              {p} <span style={{ opacity: 0.65, fontWeight: 400, marginLeft: 4 }}>{count}</span>
             </button>
           );
         })}
       </div>
 
-      <div className="btr-card p-4 mb-6 relative" style={{ maxWidth: 1192, margin: "0 auto" }}>
+      <div className="btr-card p-4 mb-10 relative" style={{ maxWidth: 1192, margin: "0 auto 40px auto" }}>
         {!gamesLoaded ? (
           <div className="text-center text-xs py-16" style={{ color: "var(--text-muted)" }}>Cargando catálogo de juegos...</div>
         ) : filtered.length === 0 ? (
@@ -475,8 +476,8 @@ function SlotPicker() {
         ) : (
           <div ref={viewportRef} className="relative overflow-hidden" style={{ height: CARD_HEIGHT }}>
             {/* flechita fija, no se mueve — solo la tira de abajo se desliza */}
-            <div className="absolute z-10" style={{ top: -2, left: "50%", transform: "translateX(-50%)", width: 0, height: 0, borderLeft: "7px solid transparent", borderRight: "7px solid transparent", borderTop: "9px solid var(--accent)" }} />
-            <div className="absolute z-10" style={{ bottom: -2, left: "50%", transform: "translateX(-50%)", width: 0, height: 0, borderLeft: "7px solid transparent", borderRight: "7px solid transparent", borderBottom: "9px solid var(--accent)" }} />
+            <div className="absolute z-10" style={{ top: -2, left: "50%", transform: "translateX(-50%)", width: 0, height: 0, borderLeft: "9px solid transparent", borderRight: "9px solid transparent", borderTop: "12px solid var(--accent)" }} />
+            <div className="absolute z-10" style={{ bottom: -2, left: "50%", transform: "translateX(-50%)", width: 0, height: 0, borderLeft: "9px solid transparent", borderRight: "9px solid transparent", borderBottom: "12px solid var(--accent)" }} />
 
             <div ref={stripRef} className="flex absolute top-0 left-0" style={{ gap: CARD_GAP, transform: "translateX(0px)" }}>
               {strip.map((g, idx) => {
@@ -502,7 +503,7 @@ function SlotPicker() {
                         key={`${idx}-${g.code || g.name}`}
                         src={g.image}
                         alt={g.name}
-                        style={{ width: "100%", height: "100%", objectFit: "contain", position: "absolute", inset: 0 }}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
                         onError={(e) => { e.target.style.display = "none"; }}
                       />
                     ) : null}
@@ -525,9 +526,9 @@ function SlotPicker() {
       </div>
 
       {picked && !spinning && (
-        <div className="btr-card p-5 mx-auto flex items-center gap-5" style={{ maxWidth: 1192 }}>
+        <div className="btr-card p-5 mx-auto flex items-start gap-5" style={{ maxWidth: 1192 }}>
           <div className="rounded-lg flex-shrink-0 overflow-hidden" style={{ width: 158, height: 158, background: "var(--panel-2)" }}>
-            {picked.image ? <img key={picked.code || picked.name} src={picked.image} alt={picked.name} style={{ width: "100%", height: "100%", objectFit: "contain" }} /> : null}
+            {picked.image ? <img key={picked.code || picked.name} src={picked.image} alt={picked.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : null}
           </div>
           <div>
             <div className="text-xs uppercase tracking-wider" style={{ color: "var(--accent)" }}>Te tocó</div>
