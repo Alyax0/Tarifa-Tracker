@@ -537,6 +537,38 @@ function SlotPicker() {
           </div>
         </div>
       )}
+
+      {gamesLoaded && filtered.length > 0 && (
+        <div className="mt-10" style={{ maxWidth: 1192, margin: "40px auto 0 auto" }}>
+          <div className="flex items-center justify-between mb-4">
+            <div className="display text-2xl">En la baraja</div>
+            <div className="text-xs" style={{ color: "var(--text-muted)" }}>{filtered.length} juegos</div>
+          </div>
+          <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))" }}>
+            {filtered.slice(0, 60).map((g, idx) => (
+              <div key={`${g.code || g.name}-${idx}`} className="rounded-lg overflow-hidden relative slot-card" style={{ aspectRatio: "3 / 4", background: "var(--panel-2)", border: "1px solid var(--border)" }}>
+                {g.image ? (
+                  <img
+                    src={g.image}
+                    alt={g.name}
+                    loading="lazy"
+                    style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
+                    onError={(e) => { e.target.style.display = "none"; }}
+                  />
+                ) : null}
+                <div className="absolute bottom-0 left-0 right-0 p-2" style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.9), transparent)" }}>
+                  <div className="text-xs font-semibold leading-tight">{g.name}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {filtered.length > 60 && (
+            <div className="text-center text-xs mt-4" style={{ color: "var(--text-muted)" }}>
+              Mostrando 60 de {filtered.length} — refiná la búsqueda o el proveedor para ver otros.
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
