@@ -160,15 +160,15 @@ export default function LiveTracker() {
   return (
     <div className="w-full min-h-screen relative overflow-hidden" style={{ background: "var(--bg)", color: "var(--text)", fontFamily: "var(--font-body)" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
         :root {
           --bg: #0A0A0C; --panel: #131316; --panel-2: #1A1A1E; --border: #262629;
           --accent: #2F6FED; --accent-dim: #123058;
           --text: #F2F2F0; --text-muted: #8A8A90;
-          --font-display: 'Bebas Neue', sans-serif; --font-body: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace;
+          --font-display: 'Archivo Black', sans-serif; --font-body: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace;
         }
         .mono { font-family: var(--font-mono); }
-        .display { font-family: var(--font-display); letter-spacing: 0.02em; }
+        .display { font-family: var(--font-display); letter-spacing: -0.02em; line-height: 0.92; }
         .btr-input { background: var(--panel-2); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 8px 10px; font-size: 14px; outline: none; }
         .btr-input:focus { border-color: var(--accent); }
         .btr-card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; }
@@ -323,8 +323,8 @@ export default function LiveTracker() {
   );
 }
 
-const CARD_WIDTH = 130;
-const CARD_HEIGHT = 165;
+const CARD_WIDTH = 150;
+const CARD_HEIGHT = 200;
 const CARD_GAP = 10;
 const STEP = CARD_WIDTH + CARD_GAP;
 const LEAD_COUNT = 28; // cuántas tarjetas "de relleno" antes de la ganadora
@@ -465,7 +465,7 @@ function SlotPicker() {
         })}
       </div>
 
-      <div className="btr-card p-4 mb-6 relative" style={{ maxWidth: 820, margin: "0 auto" }}>
+      <div className="btr-card p-4 mb-6 relative" style={{ maxWidth: 1192, margin: "0 auto" }}>
         {!gamesLoaded ? (
           <div className="text-center text-xs py-16" style={{ color: "var(--text-muted)" }}>Cargando catálogo de juegos...</div>
         ) : filtered.length === 0 ? (
@@ -525,13 +525,13 @@ function SlotPicker() {
       </div>
 
       {picked && !spinning && (
-        <div className="btr-card p-4 max-w-md mx-auto flex items-center gap-4">
-          <div className="rounded-lg flex-shrink-0 overflow-hidden" style={{ width: 64, height: 64, background: "var(--panel-2)" }}>
+        <div className="btr-card p-5 mx-auto flex items-center gap-5" style={{ maxWidth: 1192 }}>
+          <div className="rounded-lg flex-shrink-0 overflow-hidden" style={{ width: 158, height: 158, background: "var(--panel-2)" }}>
             {picked.image ? <img key={picked.code || picked.name} src={picked.image} alt={picked.name} style={{ width: "100%", height: "100%", objectFit: "contain" }} /> : null}
           </div>
           <div>
             <div className="text-xs uppercase tracking-wider" style={{ color: "var(--accent)" }}>Te tocó</div>
-            <div className="display text-2xl">{picked.name}</div>
+            <div className="display text-3xl">{picked.name}</div>
             <div className="text-xs" style={{ color: "var(--text-muted)" }}>{picked.provider}</div>
           </div>
         </div>
