@@ -459,7 +459,7 @@ function SlotPicker() {
     <div>
       <div className="text-center mb-2">
         <div className="text-xs uppercase tracking-widest" style={{ color: "var(--accent)" }}>Gamdom</div>
-        <h1 className="display text-8xl">
+        <h1 className="display text-6xl">
           SLOT <span className="neon-outline">PICKER</span>
         </h1>
         <div className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
