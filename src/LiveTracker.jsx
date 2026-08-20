@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
-  Search, Shuffle, Trophy, RefreshCw,
+  Search, Shuffle, Trophy, RefreshCw, Radio, Dice5, Coins,
 } from "lucide-react";
 
 // URL de tu endpoint backend (ver api/bets.js). La página lo consulta sola,
@@ -174,10 +174,10 @@ export default function LiveTracker() {
         .btr-card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; }
         .chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 100px; font-size: 12px; font-weight: 500; }
         .provider-chip { display: inline-flex; align-items: center; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; transition: background 0.15s; }
-        .navtab { padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
+        .navtab { padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
         .row-hover:hover { background: var(--panel-2); }
         .slot-card { transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
-        .neon-outline { color: transparent; -webkit-text-stroke: 2px var(--accent); text-shadow: 0 0 8px var(--accent), 0 0 22px var(--accent), 0 0 45px rgba(47,111,237,0.6); }
+        .neon-outline { color: transparent; -webkit-text-stroke: 1.5px var(--accent); text-shadow: 0 0 3px var(--accent), 0 0 8px rgba(47,111,237,0.7); }
         .slot-card:hover { transform: translateY(-3px); }
         ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
       `}</style>
@@ -198,10 +198,12 @@ export default function LiveTracker() {
             )}
           </div>
           <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ border: "1px solid var(--border)" }}>
-            <div className={`navtab ${view === "feed" ? "" : ""}`} style={{ background: view === "feed" ? "var(--accent)" : "transparent", color: view === "feed" ? "#fff" : "var(--text-muted)" }} onClick={() => setView("feed")}>Live Feed</div>
-            <div className="navtab" style={{ background: view === "picker" ? "var(--accent)" : "transparent", color: view === "picker" ? "#fff" : "var(--text-muted)" }} onClick={() => setView("picker")}>Slot Picker</div>
-            <a href="https://tarifagiveaway.com/es/home" target="_blank" rel="noreferrer" className="navtab" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Tarifagiveaway</a>
-            <a href="https://gamdom.com/r/tarifa" target="_blank" rel="noreferrer" className="navtab" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Gamdom</a>
+            <div className={`navtab ${view === "feed" ? "" : ""}`} style={{ background: view === "feed" ? "var(--accent)" : "transparent", color: view === "feed" ? "#fff" : "var(--text-muted)" }} onClick={() => setView("feed")}><Radio size={14} /> Live Feed</div>
+            <div className="navtab" style={{ background: view === "picker" ? "var(--accent)" : "transparent", color: view === "picker" ? "#fff" : "var(--text-muted)" }} onClick={() => setView("picker")}><Dice5 size={14} /> Slot Picker</div>
+            <a href="https://tarifagiveaway.com/es/home" target="_blank" rel="noreferrer" className="navtab" style={{ color: "var(--text-muted)", textDecoration: "none" }}>
+              <img src="/tarifagiveaway-logo.png" alt="" style={{ height: 16, width: "auto" }} /> Tarifagiveaway
+            </a>
+            <a href="https://gamdom.com/r/tarifa" target="_blank" rel="noreferrer" className="navtab" style={{ color: "var(--text-muted)", textDecoration: "none" }}><Coins size={14} /> Gamdom</a>
           </div>
           <div className="flex items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
             <RefreshCw size={12} className={syncStatus === "esperando" ? "animate-spin" : ""} style={{ color: syncStatus === "error" ? "#E8283F" : "#35D07F" }} />
