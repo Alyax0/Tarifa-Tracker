@@ -177,7 +177,7 @@ export default function LiveTracker() {
         .navtab { padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
         .row-hover:hover { background: var(--panel-2); }
         .slot-card { transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
-        .neon-outline { color: transparent; -webkit-text-stroke: 1.5px var(--accent); text-shadow: 0 0 3px var(--accent), 0 0 8px rgba(47,111,237,0.7); }
+        .neon-outline { color: transparent; -webkit-text-stroke: 1.5px var(--accent); filter: drop-shadow(0 0 5px var(--accent)) drop-shadow(0 0 12px rgba(47,111,237,0.6)); }
         .slot-card:hover { transform: translateY(-3px); }
         ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
       `}</style>
@@ -203,7 +203,9 @@ export default function LiveTracker() {
             <a href="https://tarifagiveaway.com/es/home" target="_blank" rel="noreferrer" className="navtab" style={{ color: "var(--text-muted)", textDecoration: "none" }}>
               <img src="/tarifagiveaway-logo.png" alt="" style={{ height: 16, width: "auto" }} /> Tarifagiveaway
             </a>
-            <a href="https://gamdom.com/r/tarifa" target="_blank" rel="noreferrer" className="navtab" style={{ color: "var(--text-muted)", textDecoration: "none" }}><Coins size={14} /> Gamdom</a>
+            <a href="https://gamdom.com/r/tarifa" target="_blank" rel="noreferrer" className="navtab" style={{ color: "var(--text-muted)", textDecoration: "none" }}>
+              <img src="/gamdom-logo.png" alt="" style={{ height: 16, width: "auto" }} /> Gamdom
+            </a>
           </div>
           <div className="flex items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
             <RefreshCw size={12} className={syncStatus === "esperando" ? "animate-spin" : ""} style={{ color: syncStatus === "error" ? "#E8283F" : "#35D07F" }} />
