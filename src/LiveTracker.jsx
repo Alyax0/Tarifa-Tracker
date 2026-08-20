@@ -216,7 +216,7 @@ export default function LiveTracker() {
         {view === "feed" ? (
           <>
             <h1 className="display text-6xl text-center mb-1" style={{ color: "var(--text)" }}>
-              {brand.split(" ")[0]} <span style={{ color: "var(--accent)" }}>{brand.split(" ").slice(1).join(" ")}</span>
+              {brand.split(" ")[0]} <span className="neon-outline">{brand.split(" ").slice(1).join(" ")}</span>
             </h1>
             <div className="text-center text-xs mb-8" style={{ color: "var(--text-muted)" }}>
               Fuente: Gamdom · sincronizado automáticamente
@@ -459,7 +459,7 @@ function SlotPicker() {
     <div>
       <div className="text-center mb-2">
         <div className="text-xs uppercase tracking-widest" style={{ color: "var(--accent)" }}>Gamdom</div>
-        <h1 className="display text-6xl">
+        <h1 className="display text-8xl">
           SLOT <span className="neon-outline">PICKER</span>
         </h1>
         <div className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
