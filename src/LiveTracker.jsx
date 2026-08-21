@@ -54,6 +54,8 @@ export default function LiveTracker() {
   const [lastSync, setLastSync] = useState(null);
   const [syncStatus, setSyncStatus] = useState("esperando"); // esperando | ok | error
   const [kickLive, setKickLive] = useState(false);
+  const [session, setSession] = useState(null); // { username, balance } o null si no logueado
+  const [sessionChecked, setSessionChecked] = useState(false);
 
   useEffect(() => {
     try {
@@ -140,6 +142,17 @@ export default function LiveTracker() {
     return () => clearInterval(interval);
   }, [loaded]);
 
+  // Consulta si el viewer que abrió la página tiene sesión activa con Kick.
+  useEffect(() => {
+    fetch("/api/kick-me", { credentials: "include" })
+      .then((r) => r.json())
+      .then((data) => {
+        setSession(data.loggedIn ? { username: data.username, balance: data.balance } : null);
+        setSessionChecked(true);
+      })
+      .catch(() => setSessionChecked(true));
+  }, []);
+
   // Consulta si el canal de Kick está en vivo, cada 30s.
   useEffect(() => {
     let cancelled = false;
@@ -207,9 +220,23 @@ export default function LiveTracker() {
               <img src="/gamdom-logo.png" alt="" style={{ height: 16, width: "auto" }} /> Gamdom
             </a>
           </div>
-          <div className="flex items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
-            <RefreshCw size={12} className={syncStatus === "esperando" ? "animate-spin" : ""} style={{ color: syncStatus === "error" ? "#E8283F" : "#35D07F" }} />
-            {syncStatus === "error" ? "sin conexión" : lastSync ? `sync ${lastSync.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}` : "conectando..."}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
+              <RefreshCw size={12} className={syncStatus === "esperando" ? "animate-spin" : ""} style={{ color: syncStatus === "error" ? "#E8283F" : "#35D07F" }} />
+              {syncStatus === "error" ? "sin conexión" : lastSync ? `sync ${lastSync.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}` : "conectando..."}
+            </div>
+            {sessionChecked && (
+              session ? (
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold" style={{ background: "var(--panel-2)", border: "1px solid var(--border)" }}>
+                  <span>{session.username}</span>
+                  <span style={{ color: "#35D07F" }}>{session.balance.toLocaleString()} 🪙</span>
+                </div>
+              ) : (
+                <a href="/api/kick-auth-start" className="px-4 py-2 rounded-full text-sm font-semibold" style={{ background: "#53FC18", color: "#000", textDecoration: "none" }}>
+                  Entrar con Kick
+                </a>
+              )
+            )}
           </div>
         </div>
 
