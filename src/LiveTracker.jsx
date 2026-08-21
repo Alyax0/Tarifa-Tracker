@@ -305,18 +305,17 @@ export default function LiveTracker() {
                 </div>
                 {kickLive ? (
                   <div className="flex-1" style={{ background: "#000", position: "relative", overflow: "hidden" }}>
-                    <iframe
-                      src={`https://player.kick.com/${kickChannel}`}
-                      title={`Stream de ${kickChannel}`}
-                      allow="autoplay; fullscreen"
-                      allowFullScreen
-                      style={{
-                        position: "absolute",
-                        top: "-18%", left: "-18%",
-                        width: "136%", height: "136%",
-                        border: "none",
-                      }}
-                    />
+                   <iframe
+  src={`https://player.kick.com/${kickChannel}?autoplay=true&muted=true`}
+  title={`Stream de ${kickChannel}`}
+  allow="autoplay; fullscreen"
+  allowFullScreen
+  style={{
+    width: "100%",
+    height: "100%",
+    border: "none",
+  }}
+/>
                   </div>
                 ) : (
                   <div className="flex items-center justify-center flex-1" style={{ background: "#000" }}>
