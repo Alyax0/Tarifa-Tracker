@@ -10,10 +10,10 @@ const POLL_MS = 20000; // cada cuanto revisa por apuestas nuevas
 
 const CATS = {
   deportiva: { label: "Deportiva", color: "#4C8DFF" },
-  skins: { label: "Gamdom", color: "#2F6FED" },
+  skins: { label: "Gamdom", color: "#00D9FF" },
 };
 const RESULTS = {
-  pendiente: { label: "Pendiente", color: "#E8B339" },
+  pendiente: { label: "Pendiente", color: "#F5A623" },
   ganada: { label: "Ganada", color: "#35D07F" },
   perdida: { label: "Perdida", color: "#E8283F" },
   push: { label: "Push", color: "#8A8A90" },
@@ -175,8 +175,9 @@ export default function LiveTracker() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
         :root {
-          --bg: #000000; --panel: #131316; --panel-2: #1A1A1E; --border: #262629;
-          --accent: #2F6FED; --accent-dim: #123058;
+          --bg: #0A0A0F; --panel: #131318; --panel-2: #1A1A22; --border: #24242E;
+          --accent: #00D9FF; --accent-dim: #0A2A33;
+          --accent-2: #F5A623; --accent-2-dim: #2E2107;
           --text: #F2F2F0; --text-muted: #8A8A90;
           --font-display: 'Archivo Black', sans-serif; --font-body: 'Archivo Black', sans-serif; --font-mono: 'JetBrains Mono', monospace;
         }
@@ -186,19 +187,15 @@ export default function LiveTracker() {
         .btr-input:focus { border-color: var(--accent); }
         .btr-card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; }
         .chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 100px; font-size: 12px; font-weight: 500; }
-        .provider-chip { display: inline-flex; align-items: center; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; transition: background 0.15s; }
+        .provider-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border-left: 3px solid transparent; transition: background 0.15s, border-color 0.15s; }
+        .provider-row:hover { background: var(--panel-2); }
         .navtab { padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
         .row-hover:hover { background: var(--panel-2); }
         .slot-card { transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
-        .neon-outline { color: transparent; -webkit-text-stroke: 1.5px var(--accent); filter: drop-shadow(0 0 5px var(--accent)) drop-shadow(0 0 12px rgba(47,111,237,0.6)); }
         .slot-card:hover { transform: translateY(-3px); }
+        .btn-amber:hover { background: #FFC24D; }
         ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
       `}</style>
-
-      {/* signature diagonal slash background */}
-      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        <div style={{ position: "absolute", top: "-10%", right: "-5%", width: "60%", height: "140%", background: "linear-gradient(100deg, transparent 40%, var(--accent-dim) 41%, transparent 44%, transparent 50%, var(--accent) 51%, transparent 54%)", opacity: 0.25, transform: "rotate(8deg)" }} />
-      </div>
 
       <div className="relative mx-auto px-5 py-6" style={{ zIndex: 1, maxWidth: 1600 }}>
         {/* Nav */}
@@ -211,8 +208,8 @@ export default function LiveTracker() {
             )}
           </div>
           <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ border: "1px solid var(--border)" }}>
-            <div className={`navtab ${view === "feed" ? "" : ""}`} style={{ background: view === "feed" ? "var(--accent)" : "transparent", color: view === "feed" ? "#fff" : "var(--text-muted)" }} onClick={() => setView("feed")}><Radio size={14} /> Live Feed</div>
-            <div className="navtab" style={{ background: view === "picker" ? "var(--accent)" : "transparent", color: view === "picker" ? "#fff" : "var(--text-muted)" }} onClick={() => setView("picker")}><Dice5 size={14} /> Slot Picker</div>
+            <div className="navtab" style={{ background: view === "feed" ? "var(--accent)" : "transparent", color: view === "feed" ? "#06060A" : "var(--text-muted)", fontWeight: view === "feed" ? 700 : 500 }} onClick={() => setView("feed")}><Radio size={14} /> Live Feed</div>
+            <div className="navtab" style={{ background: view === "picker" ? "var(--accent)" : "transparent", color: view === "picker" ? "#06060A" : "var(--text-muted)", fontWeight: view === "picker" ? 700 : 500 }} onClick={() => setView("picker")}><Dice5 size={14} /> Slot Picker</div>
             <a href="https://tarifagiveaway.com/es/home" target="_blank" rel="noreferrer" className="navtab" style={{ color: "var(--text-muted)", textDecoration: "none" }}>
               <img src="/tarifagiveaway-logo.png" alt="" style={{ height: 16, width: "auto" }} /> Tarifagiveaway
             </a>
@@ -243,7 +240,7 @@ export default function LiveTracker() {
         {view === "feed" ? (
           <>
             <h1 className="display text-6xl text-center mb-1" style={{ color: "var(--text)" }}>
-              {brand.split(" ")[0]} <span className="neon-outline">{brand.split(" ").slice(1).join(" ")}</span>
+              {brand.split(" ")[0]} <span style={{ color: "var(--accent)" }}>{brand.split(" ").slice(1).join(" ")}</span>
             </h1>
             <div className="text-center text-xs mb-8" style={{ color: "var(--text-muted)" }}>
               Fuente: Gamdom · sincronizado automáticamente
@@ -342,7 +339,7 @@ export default function LiveTracker() {
                     </div>
                     <div className="flex justify-between text-xs mono" style={{ color: "var(--text-muted)" }}>
                       <span>{CATS[b.category].label} · {fmt(b.stake)}</span>
-                      <span style={{ color: "#F0B429" }}>{parseFloat(b.odds).toFixed(2)}x</span>
+                      <span style={{ color: "var(--accent-2)" }}>{parseFloat(b.odds).toFixed(2)}x</span>
                     </div>
                   </div>
                 ))}
@@ -486,104 +483,130 @@ function SlotPicker() {
       <div className="text-center mb-2">
         <div className="text-xs uppercase tracking-widest" style={{ color: "var(--accent)" }}>Gamdom</div>
         <h1 className="display text-6xl">
-          SLOT <span className="neon-outline">PICKER</span>
+          SLOT <span style={{ color: "var(--accent)" }}>PICKER</span>
         </h1>
         <div className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
           ¿No sabés qué jugar? Filtrá por proveedor y que el azar decida entre los Originals y slots reales de Gamdom. {gamesLoaded ? allGames.length : "..."} juegos en la baraja.
         </div>
       </div>
 
-      <div className="max-w-xl mx-auto mt-6 mb-4 relative">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-muted)" }} />
-        <input className="btr-input w-full" style={{ paddingLeft: 36 }} placeholder="Buscar un juego..." value={query} onChange={(e) => setQuery(e.target.value)} />
-      </div>
-
-      <div className="flex flex-wrap justify-center gap-2 mb-8">
-        <button onClick={() => setActiveProviders([])} className="provider-chip" style={{ background: activeProviders.length === 0 ? "var(--accent)" : "var(--panel-2)", color: "#fff" }}>
-          Todos <span style={{ opacity: 0.65, fontWeight: 400, marginLeft: 4 }}>{allGames.length}</span>
-        </button>
-        {providers.map((p) => {
-          const count = allGames.filter((s) => s.provider === p).length;
-          const active = activeProviders.includes(p);
-          return (
-            <button key={p} onClick={() => toggleProvider(p)} className="provider-chip" style={{ background: active ? "var(--accent)" : "var(--panel-2)", color: "#fff" }}>
-              {p} <span style={{ opacity: 0.65, fontWeight: 400, marginLeft: 4 }}>{count}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="btr-card p-4 mb-10 relative" style={{ maxWidth: 1192, margin: "0 auto 40px auto", border: "1px solid var(--accent)", boxShadow: "0 0 25px rgba(47,111,237,0.45), inset 0 0 30px rgba(47,111,237,0.08)" }}>
-        {!gamesLoaded ? (
-          <div className="text-center text-xs py-16" style={{ color: "var(--text-muted)" }}>Cargando catálogo de juegos...</div>
-        ) : filtered.length === 0 ? (
-          <div className="text-center text-xs py-16" style={{ color: "var(--text-muted)" }}>Ningún juego coincide con tu búsqueda.</div>
-        ) : strip.length === 0 ? (
-          <div className="text-center text-xs py-16" style={{ color: "var(--text-muted)" }}>Apretá "Girar" para elegir un juego al azar.</div>
-        ) : (
-          <div ref={viewportRef} className="relative overflow-hidden" style={{ height: CARD_HEIGHT }}>
-            {/* flechita fija, no se mueve — solo la tira de abajo se desliza */}
-            <div className="absolute z-10" style={{ top: -2, left: "50%", transform: "translateX(-50%)", width: 0, height: 0, borderLeft: "9px solid transparent", borderRight: "9px solid transparent", borderTop: "12px solid var(--accent)" }} />
-            <div className="absolute z-10" style={{ bottom: -2, left: "50%", transform: "translateX(-50%)", width: 0, height: 0, borderLeft: "9px solid transparent", borderRight: "9px solid transparent", borderBottom: "12px solid var(--accent)" }} />
-
-            <div ref={stripRef} className="flex absolute top-0 left-0" style={{ gap: CARD_GAP, transform: "translateX(0px)" }}>
-              {strip.map((g, idx) => {
-                const isWinner = idx === LEAD_COUNT;
-                const settled = !spinning && picked;
-                return (
-                  <div
-                    key={idx}
-                    className="rounded-xl overflow-hidden relative flex-shrink-0"
-                    style={{
-                      width: CARD_WIDTH,
-                      height: CARD_HEIGHT,
-                      background: "var(--panel-2)",
-                      border: settled && isWinner ? "2px solid var(--accent)" : "1px solid var(--border)",
-                      boxShadow: settled && isWinner ? "0 0 22px rgba(47,111,237,0.55)" : "none",
-                      opacity: settled && !isWinner ? 0.35 : 1,
-                      filter: settled && !isWinner ? "grayscale(0.6)" : "none",
-                      transition: "opacity 0.4s, filter 0.4s, border-color 0.4s, box-shadow 0.4s",
-                    }}
-                  >
-                    {g?.image ? (
-                      <img
-                        key={`${idx}-${g.code || g.name}`}
-                        src={g.image}
-                        alt={g.name}
-                        style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
-                        onError={(e) => { e.target.style.display = "none"; }}
-                      />
-                    ) : null}
-                    <div className="absolute bottom-0 left-0 right-0 p-2" style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.9), transparent)" }}>
-                      <div className="text-xs font-semibold leading-tight">{g?.name}</div>
-                    </div>
-                  </div>
-                );
-              })}
+      <div className="flex gap-5 mt-8" style={{ maxWidth: 1192, margin: "32px auto 0 auto" }}>
+        {/* Sidebar: búsqueda + proveedores */}
+        <div className="flex-shrink-0" style={{ width: 260 }}>
+          <div className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: "var(--text-muted)" }}>Proveedores</div>
+          <div className="relative mb-3">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-muted)" }} />
+            <input className="btr-input w-full" style={{ paddingLeft: 32 }} placeholder="Buscar un juego..." value={query} onChange={(e) => setQuery(e.target.value)} />
+          </div>
+          <div className="btr-card" style={{ maxHeight: 380, overflowY: "auto", padding: 6 }}>
+            <div
+              onClick={() => setActiveProviders([])}
+              className="provider-row"
+              style={{
+                background: activeProviders.length === 0 ? "var(--accent-dim)" : "transparent",
+                borderLeftColor: activeProviders.length === 0 ? "var(--accent)" : "transparent",
+                color: activeProviders.length === 0 ? "var(--text)" : "var(--text-muted)",
+              }}
+            >
+              <span>Todos</span>
+              <span style={{ color: activeProviders.length === 0 ? "var(--accent)" : "var(--text-muted)" }}>{allGames.length}</span>
             </div>
-          </div>
-        )}
-      </div>
-
-      <div className="text-center mb-8">
-        <button onClick={spin} disabled={filtered.length === 0 || spinning} className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium" style={{ background: "var(--accent)", color: "#fff", opacity: filtered.length === 0 || spinning ? 0.6 : 1 }}>
-          <Shuffle size={16} /> {spinning ? "Girando..." : picked ? "Girar de nuevo" : "Girar"}
-        </button>
-        <div className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>{filtered.length} juegos en juego</div>
-      </div>
-
-      {picked && !spinning && (
-        <div className="btr-card p-5 mx-auto flex items-start gap-5" style={{ maxWidth: 1192 }}>
-          <div className="rounded-lg flex-shrink-0 overflow-hidden" style={{ width: 158, height: 158, background: "var(--panel-2)" }}>
-            {picked.image ? <img key={picked.code || picked.name} src={picked.image} alt={picked.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : null}
-          </div>
-          <div>
-            <div className="text-xs uppercase tracking-wider" style={{ color: "var(--accent)" }}>Te tocó</div>
-            <div className="display text-3xl">{picked.name}</div>
-            <div className="text-xs" style={{ color: "var(--text-muted)" }}>{picked.provider}</div>
+            {providers.map((p) => {
+              const count = allGames.filter((s) => s.provider === p).length;
+              const active = activeProviders.includes(p);
+              return (
+                <div
+                  key={p}
+                  onClick={() => toggleProvider(p)}
+                  className="provider-row"
+                  style={{
+                    background: active ? "var(--accent-dim)" : "transparent",
+                    borderLeftColor: active ? "var(--accent)" : "transparent",
+                    color: active ? "var(--text)" : "var(--text-muted)",
+                  }}
+                >
+                  <span>{p}</span>
+                  <span style={{ color: active ? "var(--accent)" : "var(--text-muted)" }}>{count}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
-      )}
+
+        {/* Vitrina + tira */}
+        <div className="flex-1 min-w-0">
+          <div className="btr-card p-4 relative">
+            {!gamesLoaded ? (
+              <div className="text-center text-xs py-16" style={{ color: "var(--text-muted)" }}>Cargando catálogo de juegos...</div>
+            ) : filtered.length === 0 ? (
+              <div className="text-center text-xs py-16" style={{ color: "var(--text-muted)" }}>Ningún juego coincide con tu búsqueda.</div>
+            ) : strip.length === 0 ? (
+              <div className="text-center text-xs py-16" style={{ color: "var(--text-muted)" }}>Apretá "Girar" para elegir un juego al azar.</div>
+            ) : (
+              <div ref={viewportRef} className="relative overflow-hidden" style={{ height: CARD_HEIGHT }}>
+                {/* flechita fija, no se mueve — solo la tira de abajo se desliza */}
+                <div className="absolute z-10" style={{ top: -2, left: "50%", transform: "translateX(-50%)", width: 0, height: 0, borderLeft: "9px solid transparent", borderRight: "9px solid transparent", borderTop: "12px solid var(--accent-2)" }} />
+                <div className="absolute z-10" style={{ bottom: -2, left: "50%", transform: "translateX(-50%)", width: 0, height: 0, borderLeft: "9px solid transparent", borderRight: "9px solid transparent", borderBottom: "12px solid var(--accent-2)" }} />
+
+                <div ref={stripRef} className="flex absolute top-0 left-0" style={{ gap: CARD_GAP, transform: "translateX(0px)" }}>
+                  {strip.map((g, idx) => {
+                    const isWinner = idx === LEAD_COUNT;
+                    const settled = !spinning && picked;
+                    return (
+                      <div
+                        key={idx}
+                        className="rounded-xl overflow-hidden relative flex-shrink-0"
+                        style={{
+                          width: CARD_WIDTH,
+                          height: CARD_HEIGHT,
+                          background: "var(--panel-2)",
+                          border: settled && isWinner ? "2px solid var(--accent-2)" : "1px solid var(--border)",
+                          opacity: settled && !isWinner ? 0.35 : 1,
+                          filter: settled && !isWinner ? "grayscale(0.6)" : "none",
+                          transition: "opacity 0.4s, filter 0.4s, border-color 0.4s",
+                        }}
+                      >
+                        {g?.image ? (
+                          <img
+                            key={`${idx}-${g.code || g.name}`}
+                            src={g.image}
+                            alt={g.name}
+                            style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
+                            onError={(e) => { e.target.style.display = "none"; }}
+                          />
+                        ) : null}
+                        <div className="absolute bottom-0 left-0 right-0 p-2" style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.9), transparent)" }}>
+                          <div className="text-xs font-semibold leading-tight">{g?.name}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="text-center mt-6 mb-8">
+            <button onClick={spin} disabled={filtered.length === 0 || spinning} className="btn-amber inline-flex items-center gap-2 px-6 py-3 rounded-lg font-bold" style={{ background: "var(--accent-2)", color: "#1A1200", opacity: filtered.length === 0 || spinning ? 0.6 : 1 }}>
+              <Shuffle size={16} /> {spinning ? "Girando..." : picked ? "Girar de nuevo" : "Girar"}
+            </button>
+            <div className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>{filtered.length} juegos en juego</div>
+          </div>
+
+          {picked && !spinning && (
+            <div className="btr-card p-5 flex items-start gap-5">
+              <div className="rounded-lg flex-shrink-0 overflow-hidden" style={{ width: 158, height: 158, background: "var(--panel-2)" }}>
+                {picked.image ? <img key={picked.code || picked.name} src={picked.image} alt={picked.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : null}
+              </div>
+              <div>
+                <div className="text-xs uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>Te tocó</div>
+                <div className="display text-3xl">{picked.name}</div>
+                <div className="text-xs font-semibold" style={{ color: "var(--accent-2)" }}>{picked.provider}</div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       {gamesLoaded && filtered.length > 0 && (
         <div className="mt-10" style={{ maxWidth: 1192, margin: "40px auto 0 auto" }}>
