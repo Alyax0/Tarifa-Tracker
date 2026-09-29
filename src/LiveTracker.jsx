@@ -529,6 +529,7 @@ function SlotPicker() {
                 background: activeProviders.length === 0 ? "var(--accent-dim)" : "transparent",
                 borderLeftColor: activeProviders.length === 0 ? "var(--accent)" : "transparent",
                 color: activeProviders.length === 0 ? "var(--text)" : "var(--text-muted)",
+                boxShadow: activeProviders.length === 0 ? "inset 0 0 14px rgba(0,217,255,0.12)" : "none",
               }}
             >
               <span>Todos</span>
@@ -546,6 +547,7 @@ function SlotPicker() {
                     background: active ? "var(--accent-dim)" : "transparent",
                     borderLeftColor: active ? "var(--accent)" : "transparent",
                     color: active ? "var(--text)" : "var(--text-muted)",
+                    boxShadow: active ? "inset 0 0 14px rgba(0,217,255,0.12)" : "none",
                   }}
                 >
                   <span>{p}</span>
@@ -558,7 +560,7 @@ function SlotPicker() {
 
         {/* Vitrina + tira */}
         <div className="flex-1 min-w-0">
-          <div className="btr-card p-4 relative" style={{ overflow: "hidden" }}>
+          <div className="btr-card p-4 relative" style={{ overflow: "hidden", border: "1px solid rgba(0,217,255,0.35)", boxShadow: "0 0 30px rgba(0,217,255,0.10), inset 0 0 40px rgba(0,217,255,0.04)" }}>
             <div className="absolute pointer-events-none" style={{ left: "50%", bottom: -30, width: "70%", height: 60, transform: "translateX(-50%)", background: "radial-gradient(ellipse at center, rgba(0,217,255,0.16) 0%, transparent 70%)" }} />
             {!gamesLoaded ? (
               <div className="text-center text-xs py-16" style={{ color: "var(--text-muted)" }}>Cargando catálogo de juegos...</div>
@@ -618,7 +620,7 @@ function SlotPicker() {
           </div>
 
           {picked && !spinning && (
-            <div className="btr-card p-6 flex items-center gap-6">
+            <div className="btr-card p-6 flex items-center gap-6" style={{ boxShadow: "0 0 24px rgba(0,217,255,0.08)" }}>
               <div className="rounded-lg flex-shrink-0 overflow-hidden" style={{ width: 190, height: 190, background: "var(--panel-2)" }}>
                 {picked.image ? <img key={picked.code || picked.name} src={picked.image} alt={picked.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : null}
               </div>
