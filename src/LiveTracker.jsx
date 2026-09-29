@@ -194,8 +194,16 @@ export default function LiveTracker() {
         .slot-card { transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
         .slot-card:hover { transform: translateY(-3px); }
         .btn-amber:hover { background: #FFC24D; }
+        .outline-text { color: transparent; -webkit-text-stroke: 1.5px var(--ink, var(--accent)); }
         ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
       `}</style>
+
+      {/* fondo con franjas diagonales, como marca de agua */}
+      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0, overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: "-15%", left: "-8%", width: "50%", height: "160%", background: "linear-gradient(112deg, transparent 46%, rgba(255,255,255,0.04) 47%, rgba(255,255,255,0.04) 49%, transparent 50%)", transform: "rotate(-7deg)" }} />
+        <div style={{ position: "absolute", top: "-20%", right: "-10%", width: "45%", height: "170%", background: "linear-gradient(100deg, transparent 40%, var(--accent-dim) 41%, transparent 46%)", opacity: 0.55, transform: "rotate(9deg)" }} />
+        <div style={{ position: "absolute", bottom: "-15%", right: "8%", width: "18%", height: "130%", background: "linear-gradient(100deg, transparent 42%, var(--accent-2-dim) 43%, transparent 48%)", opacity: 0.6, transform: "rotate(13deg)" }} />
+      </div>
 
       <div className="relative mx-auto px-5 py-6" style={{ zIndex: 1, maxWidth: 1600 }}>
         {/* Nav */}
@@ -207,13 +215,33 @@ export default function LiveTracker() {
               <span onClick={() => setEditingBrand(true)} className="cursor-pointer">{brand}</span>
             )}
           </div>
-          <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ border: "1px solid var(--border)" }}>
-            <div className="navtab" style={{ background: view === "feed" ? "var(--accent)" : "transparent", color: view === "feed" ? "#06060A" : "var(--text-muted)", fontWeight: view === "feed" ? 700 : 500 }} onClick={() => setView("feed")}><Radio size={14} /> Live Feed</div>
-            <div className="navtab" style={{ background: view === "picker" ? "var(--accent)" : "transparent", color: view === "picker" ? "#06060A" : "var(--text-muted)", fontWeight: view === "picker" ? 700 : 500 }} onClick={() => setView("picker")}><Dice5 size={14} /> Slot Picker</div>
-            <a href="https://tarifagiveaway.com/es/home" target="_blank" rel="noreferrer" className="navtab" style={{ color: "var(--text-muted)", textDecoration: "none" }}>
+          <div className="flex items-center gap-1 px-3 py-2 rounded-full" style={{ border: "1px solid var(--border)", background: "var(--panel)" }}>
+            <div
+              className="navtab"
+              style={{
+                color: view === "feed" ? "var(--accent)" : "var(--text-muted)",
+                fontWeight: view === "feed" ? 700 : 500,
+                borderBottom: view === "feed" ? "2px solid var(--accent)" : "2px solid transparent",
+                textShadow: view === "feed" ? "0 0 10px rgba(0,217,255,0.5)" : "none",
+                paddingBottom: 6,
+              }}
+              onClick={() => setView("feed")}
+            ><Radio size={14} /> Live Feed</div>
+            <div
+              className="navtab"
+              style={{
+                color: view === "picker" ? "var(--accent)" : "var(--text-muted)",
+                fontWeight: view === "picker" ? 700 : 500,
+                borderBottom: view === "picker" ? "2px solid var(--accent)" : "2px solid transparent",
+                textShadow: view === "picker" ? "0 0 10px rgba(0,217,255,0.5)" : "none",
+                paddingBottom: 6,
+              }}
+              onClick={() => setView("picker")}
+            ><Dice5 size={14} /> Slot Picker</div>
+            <a href="https://tarifagiveaway.com/es/home" target="_blank" rel="noreferrer" className="navtab" style={{ color: "#FF5FA8", textDecoration: "none", fontWeight: 600 }}>
               <img src="/tarifagiveaway-logo.png" alt="" style={{ height: 16, width: "auto" }} /> Tarifagiveaway
             </a>
-            <a href="https://gamdom.com/r/tarifa" target="_blank" rel="noreferrer" className="navtab" style={{ color: "var(--text-muted)", textDecoration: "none" }}>
+            <a href="https://gamdom.com/r/tarifa" target="_blank" rel="noreferrer" className="navtab" style={{ color: "#35D07F", textDecoration: "none", fontWeight: 600 }}>
               <img src="/gamdom-logo.png" alt="" style={{ height: 16, width: "auto" }} /> Gamdom
             </a>
           </div>
@@ -240,7 +268,7 @@ export default function LiveTracker() {
         {view === "feed" ? (
           <>
             <h1 className="display text-6xl text-center mb-1" style={{ color: "var(--text)" }}>
-              {brand.split(" ")[0]} <span style={{ color: "var(--accent)" }}>{brand.split(" ").slice(1).join(" ")}</span>
+              {brand.split(" ")[0]} <span className="outline-text" style={{ "--ink": "var(--accent)" }}>{brand.split(" ").slice(1).join(" ")}</span>
             </h1>
             <div className="text-center text-xs mb-8" style={{ color: "var(--text-muted)" }}>
               Fuente: Gamdom · sincronizado automáticamente
@@ -480,17 +508,19 @@ function SlotPicker() {
 
   return (
     <div>
-      <div className="text-center mb-2">
-        <div className="text-xs uppercase tracking-widest" style={{ color: "var(--accent)" }}>Gamdom</div>
-        <h1 className="display text-6xl">
-          SLOT <span style={{ color: "var(--accent)" }}>PICKER</span>
-        </h1>
-        <div className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
-          ¿No sabés qué jugar? Filtrá por proveedor y que el azar decida entre los Originals y slots reales de Gamdom. {gamesLoaded ? allGames.length : "..."} juegos en la baraja.
+      <div className="flex items-end justify-between mb-6" style={{ maxWidth: 1192, margin: "0 auto 24px auto" }}>
+        <div>
+          <div className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-muted)" }}>Gamdom</div>
+          <div className="display text-3xl" style={{ color: "var(--text)" }}>
+            SLOT <span className="outline-text" style={{ "--ink": "var(--accent)" }}>PICKER</span>
+          </div>
+        </div>
+        <div className="text-xs text-right" style={{ color: "var(--text-muted)", maxWidth: 320 }}>
+          ¿No sabés qué jugar? Filtrá por proveedor y que el azar decida. {gamesLoaded ? allGames.length : "..."} juegos en la baraja.
         </div>
       </div>
 
-      <div className="flex gap-5 mt-8" style={{ maxWidth: 1192, margin: "32px auto 0 auto" }}>
+      <div className="flex gap-5" style={{ maxWidth: 1192, margin: "0 auto" }}>
         {/* Sidebar: búsqueda + proveedores */}
         <div className="flex-shrink-0" style={{ width: 260 }}>
           <div className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: "var(--text-muted)" }}>Proveedores</div>
@@ -535,7 +565,8 @@ function SlotPicker() {
 
         {/* Vitrina + tira */}
         <div className="flex-1 min-w-0">
-          <div className="btr-card p-4 relative">
+          <div className="btr-card p-4 relative" style={{ overflow: "hidden" }}>
+            <div className="absolute pointer-events-none" style={{ left: "50%", bottom: -30, width: "70%", height: 60, transform: "translateX(-50%)", background: "radial-gradient(ellipse at center, rgba(0,217,255,0.16) 0%, transparent 70%)" }} />
             {!gamesLoaded ? (
               <div className="text-center text-xs py-16" style={{ color: "var(--text-muted)" }}>Cargando catálogo de juegos...</div>
             ) : filtered.length === 0 ? (
@@ -594,14 +625,14 @@ function SlotPicker() {
           </div>
 
           {picked && !spinning && (
-            <div className="btr-card p-5 flex items-start gap-5">
-              <div className="rounded-lg flex-shrink-0 overflow-hidden" style={{ width: 158, height: 158, background: "var(--panel-2)" }}>
+            <div className="btr-card p-6 flex items-center gap-6">
+              <div className="rounded-lg flex-shrink-0 overflow-hidden" style={{ width: 190, height: 190, background: "var(--panel-2)" }}>
                 {picked.image ? <img key={picked.code || picked.name} src={picked.image} alt={picked.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : null}
               </div>
               <div>
-                <div className="text-xs uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>Te tocó</div>
-                <div className="display text-3xl">{picked.name}</div>
-                <div className="text-xs font-semibold" style={{ color: "var(--accent-2)" }}>{picked.provider}</div>
+                <div className="text-xs uppercase tracking-wider mb-1" style={{ color: "var(--text-muted)" }}>Te tocó</div>
+                <div className="display text-4xl mb-1">{picked.name}</div>
+                <div className="text-sm font-semibold" style={{ color: "var(--accent-2)" }}>{picked.provider}</div>
               </div>
             </div>
           )}
