@@ -175,7 +175,7 @@ export default function LiveTracker() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
         :root {
-          --bg: #0A0A0F; --panel: #131318; --panel-2: #1A1A22; --border: #24242E;
+          --bg: #000000; --panel: #0D0D0D; --panel-2: #161616; --border: #242424;
           --accent: #00D9FF; --accent-dim: #0A2A33;
           --accent-2: #F5A623; --accent-2-dim: #2E2107;
           --text: #F2F2F0; --text-muted: #8A8A90;
@@ -197,13 +197,6 @@ export default function LiveTracker() {
         .outline-text { color: transparent; -webkit-text-stroke: 1.5px var(--ink, var(--accent)); }
         ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
       `}</style>
-
-      {/* fondo con franjas diagonales, como marca de agua */}
-      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0, overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: "-15%", left: "-8%", width: "50%", height: "160%", background: "linear-gradient(112deg, transparent 46%, rgba(255,255,255,0.04) 47%, rgba(255,255,255,0.04) 49%, transparent 50%)", transform: "rotate(-7deg)" }} />
-        <div style={{ position: "absolute", top: "-20%", right: "-10%", width: "45%", height: "170%", background: "linear-gradient(100deg, transparent 40%, var(--accent-dim) 41%, transparent 46%)", opacity: 0.55, transform: "rotate(9deg)" }} />
-        <div style={{ position: "absolute", bottom: "-15%", right: "8%", width: "18%", height: "130%", background: "linear-gradient(100deg, transparent 42%, var(--accent-2-dim) 43%, transparent 48%)", opacity: 0.6, transform: "rotate(13deg)" }} />
-      </div>
 
       <div className="relative mx-auto px-5 py-6" style={{ zIndex: 1, maxWidth: 1600 }}>
         {/* Nav */}
