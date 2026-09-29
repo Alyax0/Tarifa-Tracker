@@ -179,7 +179,7 @@ export default function LiveTracker() {
           --accent: #00D9FF; --accent-dim: #0A2A33;
           --accent-2: #F5A623; --accent-2-dim: #2E2107;
           --text: #F2F2F0; --text-muted: #8A8A90;
-          --font-display: 'Archivo Black', sans-serif; --font-body: 'Archivo Black', sans-serif; --font-mono: 'JetBrains Mono', monospace;
+          --font-display: 'Archivo Black', sans-serif; --font-body: 'Inter', system-ui, sans-serif; --font-mono: 'JetBrains Mono', monospace;
         }
         .mono { font-family: var(--font-mono); }
         .display { font-family: var(--font-display); letter-spacing: -0.02em; line-height: 0.92; }
